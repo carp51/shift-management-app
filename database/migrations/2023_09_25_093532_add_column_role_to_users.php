@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('role')->comment('役割');
-            $table->string('store_id')->comment('店舗ID');
+            $table->string('store')->comment('店舗名');
         });
     }
 
@@ -24,7 +24,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('role');
-            $table->dropColumn('store_id');
+            $table->dropColumn('store');
         });
     }
 };
