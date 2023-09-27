@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,10 +23,11 @@ Route::get('/welcome', function () {
     return view('welcome');
 });
 
-Route::get('/register',[\App\Http\Controllers\AdminController::class,'showRegister']);
-
-Route::post('/register',[\App\Http\Controllers\AdminController::class,'register']);
-
-Route::middleware('auth')->group(function (){
-    Route::get('/profile',[\App\Http\Controllers\AdminController::class,'profile'])->name('profile');
+Route::prefix('admin')->group(function() {
+    Route::get('/signup',[AdminController::class,'showSignupForm']);
+    Route::post('/signup',[AdminController::class,'signup']);
+    Route::middleware('auth')->group(function (){
+        Route::get('/home',[AdminController::class,'index']) -> name('admin.home');
+        Route::resource('users', UserController::class);
+    });
 });
