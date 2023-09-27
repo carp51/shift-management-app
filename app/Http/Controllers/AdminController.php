@@ -10,14 +10,14 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
-    public function showRegister()
+    public function showSignupForm()
    {
-       return view('register');
+       return view('admin_signup_form');
    }
 
-   public function register(Request $request)
+   public function signup(Request $request)
    {
-       $user = User::query()->create([
+       $admin = User::query()->create([
            'name'=>$request['name'],
            'email'=>$request['email'],
            'password'=>Hash::make($request['password']),
@@ -26,13 +26,13 @@ class AdminController extends Controller
            'store'=>'メガプライス',
        ]);
 
-       Auth::login($user);
+       Auth::login($admin);
 
-       return redirect()->route('profile');
+       return redirect()->route('admin.home');
    }
 
-   public function profile()
+   public function index()
    {
-       return view('profile');
+       return view('admin_home');
    }
 }
