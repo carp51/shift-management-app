@@ -9,5 +9,16 @@
 </head>
 <body>
     {{\Illuminate\Support\Facades\Auth::user()->name}}でログインしています。
+
+    <form action="{{route('admin.logout')}}" method="post">
+        @csrf
+        <button>ログアウト</button>
+    </form>
+
+    @if (Auth::user()->role === 'admin')
+        <p>あなたは管理者です</p>
+    @elseif (Auth::user()->role === 'user')
+        <p>あなたは一般ユーザーです</p>
+    @endif
 </body>
 </html>

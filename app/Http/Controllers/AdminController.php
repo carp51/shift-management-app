@@ -12,27 +12,34 @@ class AdminController extends Controller
 {
     public function showSignupForm()
    {
-       return view('admin_signup_form');
+       return view('admin.signup');
    }
 
    public function signup(Request $request)
    {
        $admin = User::query()->create([
            'name'=>$request['name'],
-           'email'=>$request['email'],
+           'email'=>NULL,
            'password'=>Hash::make($request['password']),
            # 新規登録できるのはadminのみなので
            'role'=>'admin',
-           'store'=>'メガプライス',
+           'store'=>$request['store'],
        ]);
 
        Auth::login($admin);
 
-       return redirect()->route('admin.home');
+       return redirect()->route('common.home');
+   }
+
+   public function logout()
+   {
+       Auth::logout();
+
+       return redirect() ->route('user.login');
    }
 
    public function index()
    {
-       return view('admin_home');
+       return view('common.home');
    }
 }
