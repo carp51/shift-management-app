@@ -55,4 +55,25 @@ class UserController extends Controller
         $result = $user->delete();
         return ['result' => $result];
     }
+
+    public function showLogin()
+   {
+       return view('users.login');
+   }
+
+   public function login(Request $request)
+    {
+        $credentials = $request->validate([
+            'name' => ['required'],
+            'password' => ['required'],
+        ]);
+
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+
+            return redirect()->intended('user/home');
+        }
+
+        return back();
+    }
 }

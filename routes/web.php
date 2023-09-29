@@ -16,18 +16,30 @@ use App\Http\Controllers\UserController;
 */
 
 Route::get('/', function () {
-    return view('login');
+    return redirect('/user/login');
 });
 
 Route::get('/welcome', function () {
     return view('welcome');
 });
 
-Route::prefix('admin')->group(function() {
-    Route::get('/signup',[AdminController::class,'showSignupForm']);
-    Route::post('/signup',[AdminController::class,'signup']);
+Route::prefix('user')->group(function() {
+    Route::get('/login',[UserController::class,'showLogin']) -> name('user.login');
+    Route::post('/login',[UserController::class,'login']);
+
     Route::middleware('auth')->group(function (){
-        Route::get('/home',[AdminController::class,'index']) -> name('admin.home');
-        Route::resource('users', UserController::class);
+        Route::get('/home',[AdminController::class,'index']) -> name('common.home');
     });
 });
+
+Route::prefix('admin')->group(function() {
+    Route::get('/signup',[AdminController::class,'showSignupForm']) -> name('admin.signup');
+    Route::post('/signup',[AdminController::class,'signup']);
+
+    Route::middleware('auth')->group(function (){
+        // Route::get('/home',[AdminController::class,'index']) -> name('common.home');
+        Route::resource('users', UserController::class);
+        Route::post('logout',[AdminController::class,'logout'])->name('admin.logout');
+    });
+});
+
