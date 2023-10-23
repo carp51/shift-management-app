@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UsersManagemantController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,7 +39,7 @@ Route::prefix('admin')->group(function() {
 
     Route::middleware('auth')->group(function (){
         // Route::get('/home',[AdminController::class,'index']) -> name('common.home');
-        Route::resource('users', UserController::class);
+        Route::resource('users', UsersManagemantController::class);
         Route::post('logout',[AdminController::class,'logout'])->name('admin.logout');
     });
 });

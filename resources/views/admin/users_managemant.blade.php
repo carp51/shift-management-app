@@ -18,14 +18,13 @@
                 <thead>
                     <tr>
                         <th>名前</th>
-                        <th>E-Mail</th>
-                        <th>ddd</th>
+                        <th>役割</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="user in users">
                         <td v-text="user.name"></td>
-                        <td v-text="user.email"></td>
+                        <td v-text="user.role"></td>
                         <td class="text-right">
                             <button class="btn btn-warning" type="button" @click="changeState('edit', user)">変更</button>
                             <button class="btn btn-danger" type="button" @click="onDelete(user)">削除</button>
