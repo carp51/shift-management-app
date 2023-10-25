@@ -1,0 +1,5 @@
+#calendar {
+    height: 80vh; /* 画面の高さの80%に制限 */
+    max-width: 1000px; /* 最大幅を制限 */
+    margin: 0 auto; /* 水平中央揃え */
+}
