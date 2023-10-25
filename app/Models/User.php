@@ -22,7 +22,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
-        'store',
+        'store_id',
     ];
 
     /**
@@ -46,4 +46,9 @@ class User extends Authenticatable
         'created_at'        => 'datetime:Y-m-d H:i:s', 
         'updated_at'        => 'datetime:Y-m-d H:i:s', 
     ];
+
+    public function store()
+    {
+        return $this->belongsTo(Store::class, 'store_id', 'store_id');
+    }
 }

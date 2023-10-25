@@ -8,7 +8,7 @@
 </head>
 <body>
 <div id="app" class="p-5">
-        {{\Illuminate\Support\Facades\Auth::user()->store}}のメンバー
+        {{ \Illuminate\Support\Facades\Auth::user()->store->name }}のメンバー
         <!-- 一覧表示するブロック ① -->
         <div v-if="state=='index'">
             <div class="mb-3">
