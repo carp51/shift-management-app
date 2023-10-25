@@ -16,9 +16,9 @@ class UsersManagemantController extends Controller
         $per_page = 5; // １ページごとの表示件数
 
         $loggedInUser = Auth::user(); // ログインしているユーザーを取得
-        $store = $loggedInUser->store; // ログインしているユーザーのstore 
+        $store_id = $loggedInUser->store_id; // ログインしているユーザーのstore_id
 
-        $users = User::where('store', $store)->paginate($per_page);
+        $users = User::where('store_id', $store_id)->paginate($per_page);
         // $users = DB::table('users')->paginate($per_page);
 
         return view('admin.users_managemant')->with('users', $users);
@@ -34,9 +34,9 @@ class UsersManagemantController extends Controller
         $user->role = 'user';
 
         $loggedInUser = Auth::user(); // ログインしているユーザーを取得
-        $adminStore = $loggedInUser->store; // ログインしているユーザーのstore 
+        $adminStore = $loggedInUser->store_id; // ログインしているユーザーのstore 
         
-        $user->store = $adminStore;
+        $user->store_id = $adminStore;
         $result = $user->save();
         return ['result' => $result];
     }

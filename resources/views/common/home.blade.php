@@ -21,7 +21,8 @@
     @elseif (Auth::user()->role === 'user')
         <p>あなたは一般ユーザーです</p>
     @endif
-    
+    <a href="/admin/users">管理</a>
+
     <div id='calendar'></div>
 </body>
 </html>
