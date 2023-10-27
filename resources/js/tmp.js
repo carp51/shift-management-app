@@ -1,19 +1,33 @@
 import { Calendar } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from '@fullcalendar/interaction';
+import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import axios from 'axios';
+
+// https://fullcalendar.io/docs/timeline-view
 
 var calendarEl = document.getElementById("calendar");
 
 let calendar = new Calendar(calendarEl, {
-    plugins: [dayGridPlugin, interactionPlugin],
-    initialView: "dayGridMonth",
+    schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
+    plugins: [dayGridPlugin, interactionPlugin, resourceTimelinePlugin],
+    initialView: "resourceTimelineMonth",
     headerToolbar: {
         left: "prev,next today",
         center: "title",
         right: "",
     },
     locale: "ja",
+
+    editable: true,
+
+    // 左側のリソースの一覧
+    resources: [
+        { id: "a", title: "田中" },
+        { id: "b", title: "鈴木", eventColor: "green" },
+        { id: "c", title: "鈴木", eventColor: "green" },
+        { id: "d", title: " "}
+    ],
 
     selectable: true,
     select: function (info) {

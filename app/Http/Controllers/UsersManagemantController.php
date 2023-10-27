@@ -34,7 +34,7 @@ class UsersManagemantController extends Controller
         $user->role = 'user';
 
         $loggedInUser = Auth::user(); // ログインしているユーザーを取得
-        $adminStore = $loggedInUser->store_id; // ログインしているユーザーのstore 
+        $adminStore = $loggedInUser->store_id; // ログインしているユーザーのstore_id
         
         $user->store_id = $adminStore;
         $result = $user->save();
