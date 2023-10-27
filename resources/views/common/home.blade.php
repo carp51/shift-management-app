@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
     <title>HOME</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -18,10 +18,10 @@
 
     @if (Auth::user()->role === 'admin')
         <p>あなたは管理者です</p>
+        <a href="/admin/users">管理</a>
     @elseif (Auth::user()->role === 'user')
         <p>あなたは一般ユーザーです</p>
     @endif
-    <a href="/admin/users">管理</a>
 
     <div id='calendar'></div>
 </body>
