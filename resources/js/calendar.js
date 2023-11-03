@@ -27,32 +27,53 @@ let calendar = new Calendar(calendarEl, {
             return
         }
 
-        // 入力ダイアログ
-        const shiftType = prompt("イベントを入力してください");
+        // // 入力ダイアログ
+        // const shiftType = prompt("イベントを入力してください");
 
-        if (shiftType) {
-            // Laravelの登録処理の呼び出し
-            axios
-                .post("/user/home/shift-add", {
-                    start_date: info.start.valueOf(),
-                    end_date: info.end.valueOf(),
-                    shift_type: shiftType,
-                })
-                .then(() => {
-                    // イベントの追加
-                    calendar.addEvent({
-                        title: shiftType,
-                        start: info.start,
-                        end: info.end,
-                        allDay: true,
+        var shiftType = null;
+
+        $('#exampleModal').modal('show').on('click', function() {
+            $('.early-shift-btn, .late-shift-btn, .fulltime-shift-btn').off('click');
+        });
+
+        $('.early-shift-btn, .late-shift-btn, .fulltime-shift-btn').on('click', function() {
+            shiftType = $(this).text(); // クリックされたボタンのテキストを取得
+            console.log('選択されたシフトタイプ:', info);
+            // ここで取得した shiftType を使って必要な処理を行う
+            if (shiftType) {
+                // Laravelの登録処理の呼び出し
+                axios
+                    .post("/user/home/shift-add", {
+                        start_date: info.start.valueOf(),
+                        end_date: info.end.valueOf(),
+                        shift_type: shiftType,
+                    })
+                    .then(() => {
+                        // イベントの追加
+                        calendar.addEvent({
+                            title: shiftType,
+                            start: info.start,
+                            end: info.end,
+                            allDay: true,
+                        });
+                        console.log(info.start.valueOf(), info.end.valueOf());
+                    })
+                    .catch(() => {
+                        // バリデーションエラーなど
+                        alert("登録に失敗しました");
                     });
-                    console.log(info.start.valueOf(), info.end.valueOf());
-                })
-                .catch(() => {
-                    // バリデーションエラーなど
-                    alert("登録に失敗しました");
-                });
-        }
+            }
+            $('#exampleModal').hide();
+            $('.early-shift-btn, .late-shift-btn, .fulltime-shift-btn').off('click');
+        });
+
+        // $('.btn btn-secondary').on('click', function() {
+        //     $('#exampleModal').hide();
+        //     $('.early-shift-btn, .late-shift-btn, .fulltime-shift-btn').off('click');
+        //     console.log("UNKO")
+        // });
+
+        console.log(info);
     },
 
     events: function (info, successCallback, failureCallback) {
