@@ -61,4 +61,29 @@ class ShiftController extends Controller
             ->where('user_id', '=', $loggedInUser -> id)
             ->get();
     }
+
+    public function shiftDelete(Request $request)
+    {
+         // バリデーション
+         $request->validate([
+            'start_date' => 'required|integer',
+            'end_date' => 'required|integer',
+        ]);
+
+        $start_date = date('Y-m-d', ($request->input('start_date') - 32400000) / 1000);
+        $end_date = date('Y-m-d', ($request->input('end_date') - 32400000) / 1000 - 24 * 60 * 60);
+
+        $loggedInUser = Auth::user();
+
+        $task = Shift::where('user_id', $loggedInUser->id)
+        ->where('start_date', $start_date)
+        ->where('end_date', $end_date)
+        ->first();
+        
+        if ($task) {
+            $task->delete();
+        }
+
+        return;
+    }
 }
