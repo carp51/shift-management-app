@@ -17,8 +17,6 @@ let calendar = new Calendar(calendarEl, {
 
     selectable: true,
     select: function (info) {
-        //alert("selected " + info.startStr + " to " + info.endStr);
-
         var select_start_date = info.start.toISOString().slice(0, 10);
         var select_end_date = new Date(info.end.getTime() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 
@@ -27,18 +25,14 @@ let calendar = new Calendar(calendarEl, {
             return
         }
 
-        // // 入力ダイアログ
-        // const shiftType = prompt("イベントを入力してください");
-
         var shiftType = null;
 
-        $('#exampleModal').modal('show').on('click', function() {
+        $('#exampleModal').modal('show').on('click', function () {
             $('.early-shift-btn, .late-shift-btn, .fulltime-shift-btn').off('click');
         });
 
-        $('.early-shift-btn, .late-shift-btn, .fulltime-shift-btn').on('click', function() {
+        $('.early-shift-btn, .late-shift-btn, .fulltime-shift-btn').on('click', function () {
             shiftType = $(this).text(); // クリックされたボタンのテキストを取得
-            console.log('選択されたシフトタイプ:', info);
             // ここで取得した shiftType を使って必要な処理を行う
             if (shiftType) {
                 // Laravelの登録処理の呼び出し
@@ -48,15 +42,17 @@ let calendar = new Calendar(calendarEl, {
                         end_date: info.end.valueOf(),
                         shift_type: shiftType,
                     })
-                    .then(() => {
+                    .then((response) => {
+                        const shiftId = response.data.shift_id;
                         // イベントの追加
                         calendar.addEvent({
+                            id: shiftId,
                             title: shiftType,
                             start: info.start,
                             end: info.end,
                             allDay: true,
-                        });
-                        console.log(info.start.valueOf(), info.end.valueOf());
+                        }, true // make the event "stick"
+                        );
                     })
                     .catch(() => {
                         // バリデーションエラーなど
@@ -66,14 +62,6 @@ let calendar = new Calendar(calendarEl, {
             $('#exampleModal').hide();
             $('.early-shift-btn, .late-shift-btn, .fulltime-shift-btn').off('click');
         });
-
-        // $('.btn btn-secondary').on('click', function() {
-        //     $('#exampleModal').hide();
-        //     $('.early-shift-btn, .late-shift-btn, .fulltime-shift-btn').off('click');
-        //     console.log("UNKO")
-        // });
-
-        console.log(info);
     },
 
     events: function (info, successCallback, failureCallback) {
@@ -88,13 +76,29 @@ let calendar = new Calendar(calendarEl, {
                 calendar.removeAllEvents();
                 // カレンダーに読み込み
                 successCallback(response.data);
-                console.log(response);
-                console.log(info.start.valueOf(), info.end.valueOf());
             })
-            .catch((response) => {
+            .catch(() => {
                 // バリデーションエラーなど
                 alert("登録に失敗しました");
             });
+    },
+
+    eventClick: function (info) {
+        console.log(info.event._instance.range.start.valueOf())
+        if (confirm('削除しますか？')) {
+            axios
+                .post("home/shift-delete", {
+                    start_date: info.event._instance.range.start.valueOf(),
+                    end_date: info.event._instance.range.end.valueOf(),
+                })
+                .then(() => {
+                })
+                .catch(() => {
+                    // バリデーションエラーなど
+                    alert("削除に失敗しました");
+                });
+            info.event.remove()
+        }
     },
 });
 calendar.render();
