@@ -27,6 +27,47 @@
     <p>あなたは一般ユーザーです</p>
     @endif
 
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-9">
+                <button type="button" class="btn btn-primary mb-12" data-toggle="modal"
+                    data-target="#bulkSelectModal">一括選択</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- シフト一括登録のときに出るモーダル -->
+    <div class="modal fade" id="bulkSelectModal" tabindex="-1" role="dialog" aria-labelledby="basicModal"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4>一括選択画面</h4>
+                </div>
+                <div class="modal-body">
+                    <p>一括で選択したい曜日を押す</p>
+                    <label><input type="checkbox" value="Sun" class="day-of-week-checks"><span>日</span></label>
+                    <label><input type="checkbox" value="Mon" class="day-of-week-checks"><span>月</span></label>
+                    <label><input type="checkbox" value="Tue" class="day-of-week-checks"><span>火</span></label>
+                    <label><input type="checkbox" value="Wed" class="day-of-week-checks"><span>水</span></label>
+                    <label><input type="checkbox" value="Thu" class="day-of-week-checks"><span>木</span></label>
+                    <label><input type="checkbox" value="Fri" class="day-of-week-checks"><span>金</span></label>
+                    <label><input type="checkbox" value="Sat" class="day-of-week-checks"><span>土</span></label>
+                </div>
+                <div class="modal-body">
+                    <p>希望シフトを選択</p>
+                    <label><input type="radio" value="early" name="shift-checks"><span>早番</span></label>
+                    <label><input type="radio" value="late" name="shift-checks"><span>遅番</span></label>
+                    <label><input type="radio" value="fulltime" name="shift-checks"><span>通し</span></label>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+                    <button type="button" class="btn btn-success" id="bulkSelectDecision" data-dismiss="modal">決定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id='calendar'></div>
 
     <div class="modal" tabindex="-1" id="exampleModal">
@@ -48,6 +89,16 @@
             </div>
         </div>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
 </body>
 
 </html>

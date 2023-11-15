@@ -32,6 +32,7 @@ Route::prefix('user')->group(function() {
     Route::middleware('auth')->group(function (){
         Route::get('/home',[AdminController::class,'index']) -> name('common.home');
         Route::post('/home/shift-add', [ShiftController::class, 'shiftAdd'])->name('shift-add');
+        Route::post('/home/shift-bulk-add', [ShiftController::class, 'shiftBulkAdd'])->name('shift-bulk-add');
         Route::post('/home/shift-get', [ShiftController::class, 'shiftGet'])->name('shift-get');
         Route::post('/home/shift-delete', [ShiftController::class, 'shiftDelete'])->name('shift-delete');
     });
