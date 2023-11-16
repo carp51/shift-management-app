@@ -154,4 +154,38 @@ class ShiftController extends Controller
 
         return;
     }
+
+    public function shiftBulkDelete(Request $request)
+    {
+        // カレンダーに表示されている期間の開始日と終了日を取得
+        $display_start_day = date('Y-m', $request->input('display_start_day') / 1000 + 24 * 60 * 60 * 8);
+        $display_end_day = date('Y-m', $request->input('display_end_day') / 1000 + 24 * 60 * 60 * 8);
+
+        // カレンダー表示開始日時（ミリ秒単位）を秒に変換したもの
+        $now_day_timestamp = $request->input('display_start_day') / 1000;
+
+        // 50日間のシフトを登録(カレンダーの最初と最後を全探索するので)
+        for ($i=0; $i < 50; $i++) { 
+            // 表示月範囲外の日付はスキップ
+            if (date('Y-m-d', $now_day_timestamp) < $display_start_day || date('Y-m-d', $now_day_timestamp) >= $display_end_day) {
+                $now_day_timestamp = strtotime('+1 day', $now_day_timestamp);
+                continue;
+            };
+
+            // 削除処理
+            $loggedInUser = Auth::user();
+
+            $task = Shift::where('user_id', $loggedInUser->id)
+            ->where('start_date', date('Y-m-d', $now_day_timestamp))
+            ->first();
+            
+            if ($task) {
+                $task->delete();
+            }
+
+            // 次の日に進む処理
+            $now_day_timestamp = strtotime('+1 day', $now_day_timestamp);
+        }
+        return;
+    }
 }
