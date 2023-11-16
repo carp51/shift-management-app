@@ -36,6 +36,15 @@
         </div>
     </div>
 
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-9">
+                <button type="button" class="btn btn-primary mb-12" data-toggle="modal"
+                    data-target="#bulkDeleteModal">一括削除</button>
+            </div>
+        </div>
+    </div>
+
     <!-- シフト一括登録のときに出るモーダル -->
     <div class="modal fade" id="bulkSelectModal" tabindex="-1" role="dialog" aria-labelledby="basicModal"
         aria-hidden="true">
@@ -63,6 +72,22 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
                     <button type="button" class="btn btn-success" id="bulkSelectDecision" data-dismiss="modal">決定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- シフト一括削除のときに出るモーダル -->
+    <div class="modal fade" id="bulkDeleteModal" tabindex="-1" role="dialog" aria-labelledby="basicModal"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4>一括でシフトを削除しますか</h4>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">いいえ</button>
+                    <button type="button" class="btn btn-danger" id="bulkDeleteDecision" data-dismiss="modal">はい</button>
                 </div>
             </div>
         </div>

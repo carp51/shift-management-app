@@ -54,9 +54,25 @@ document.getElementById('bulkSelectDecision').addEventListener('click', function
             })
             .catch(() => {
                 // エラー時の処理
-                alert("登録に失敗しましたooo");
+                alert("登録に失敗しました");
             });
     }
+});
+
+document.getElementById('bulkDeleteDecision').addEventListener('click', function(){
+    axios
+        .post("/user/home/shift-bulk-delete", {
+            display_start_day: displayStartDay,
+            display_end_day: displayEndDay,
+        })
+        .then(() => {
+            // 追加したイベントを削除
+            calendar.removeAllEvents();
+        })
+        .catch(() => {
+            // エラー時の処理
+            alert("登録に失敗しました");
+        });
 });
 
 let calendar = new Calendar(calendarEl, {
