@@ -22,26 +22,16 @@
 
     @if (Auth::user()->role === 'admin')
     <p>あなたは管理者です</p>
-    <a href="/admin/users">管理</a>
+    <a href="/admin/users" class="btn btn-primary">従業員管理</a>
     @elseif (Auth::user()->role === 'user')
     <p>あなたは一般ユーザーです</p>
     @endif
+    <a href="/user/work" class="btn btn-primary">シフト管理</a>
 
-    <div class="container">
-        <div class="row mb-5">
-            <div class="col-9">
-                <button type="button" class="btn btn-primary mb-12" data-toggle="modal"
-                    data-target="#bulkSelectModal">一括選択</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="row mb-5">
-            <div class="col-9">
-                <button type="button" class="btn btn-primary mb-12" data-toggle="modal"
-                    data-target="#bulkDeleteModal">一括削除</button>
-            </div>
+    <div class="row mt-4">
+        <div class="col-md-9">
+            <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#bulkSelectModal">一括選択</button>
+            <button type="button" class="btn btn-danger mb-3" data-toggle="modal" data-target="#bulkDeleteModal">一括削除</button>
         </div>
     </div>
 
