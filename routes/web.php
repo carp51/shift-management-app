@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UsersManagemantController;
 use App\Http\Controllers\ShiftController;
+use App\Http\Controllers\WorkController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,7 +28,7 @@ Route::get('/welcome', function () {
 
 Route::prefix('user')->group(function() {
     Route::get('/login',[UserController::class,'showLogin']) -> name('user.login');
-    Route::post('/login',[UserController::class,'login']);
+    Route::post('/login',[UserController::class,'login']) ->name('user.login');
 
     Route::middleware('auth')->group(function (){
         Route::get('/home',[AdminController::class,'index']) -> name('common.home');
@@ -36,6 +37,10 @@ Route::prefix('user')->group(function() {
         Route::post('/home/shift-get', [ShiftController::class, 'shiftGet'])->name('shift-get');
         Route::post('/home/shift-delete', [ShiftController::class, 'shiftDelete'])->name('shift-delete');
         Route::post('/home/shift-bulk-delete', [ShiftController::class, 'shiftBulkDelete'])->name('shift-bulk-delete');
+
+        Route::get('/work',[WorkController::class,'index']) -> name('common.work');
+        Route::post('/work/all-shift-get',[WorkController::class,'allShiftGet']) -> name('all-shift-get');
+        Route::post('/work/all-member-get',[WorkController::class,'allMemberGet']) -> name('all-member-get');
     });
 });
 
