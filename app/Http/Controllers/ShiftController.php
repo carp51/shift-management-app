@@ -130,6 +130,74 @@ class ShiftController extends Controller
             ->get();
     }
 
+    public function shiftStatusGet(Request $request)
+    {
+        // バリデーション
+        $request->validate([
+            'start_date' => 'required|integer',
+            'end_date' => 'required|integer'
+        ]);
+
+        // カレンダーに表示されている期間の開始日と終了日を取得
+        $display_start_day = date('Y-m', $request->input('start_date') / 1000 + 24 * 60 * 60 * 8);
+        $display_end_day = date('Y-m', $request->input('end_date') / 1000 + 24 * 60 * 60 * 8);
+
+        $shift_status_list = array();
+
+        // カレンダー表示開始日時（ミリ秒単位）を秒に変換したもの
+        $now_day_timestamp = $request->input('start_date') / 1000;
+
+        // 50日間のシフトを登録(カレンダーの最初と最後を全探索するので)
+        for ($i=0; $i < 50; $i++) { 
+            // 表示月範囲外の日付はスキップ
+            if (date('Y-m-d', $now_day_timestamp) < $display_start_day || date('Y-m-d', $now_day_timestamp) >= $display_end_day) {
+                // 次の日に進む処理
+                $now_day_timestamp = strtotime('+1 day', $now_day_timestamp);
+                continue;
+            };
+
+            $loggedInUser = Auth::user(); // ログインしているユーザーを取得
+
+            $task = Shift::where('store_id', $loggedInUser->store_id)
+            ->where('start_date', date('Y-m-d', $now_day_timestamp))
+            ->get();
+
+            $shift_status_list[] = $this->generateShiftStatus($task, $now_day_timestamp);
+
+            // 次の日に進む処理
+            $now_day_timestamp = strtotime('+1 day', $now_day_timestamp);
+        }
+
+        // 登録したシフトの情報を返す
+        return $shift_status_list;
+    }
+
+    private function generateShiftStatus($task, $now_day_timestamp)
+    {
+        $status = [
+            'start' => date('Y-m-d', $now_day_timestamp),
+            'end' => date('Y-m-d', $now_day_timestamp),
+            'display' => "background",
+            'color' => "#00FF00", // デフォルトの色
+        ];
+
+        if ($task->count() === 0) {
+            $status['color'] = "#FF0000";
+        } elseif ($task->count() === 1) {
+            if ($task->first()->shift_type === "通し") {
+                $status['color'] = "#00FF00";
+            } elseif ($task->first()->shift_type === "早番") {
+                $status['color'] = "#00FFFF";
+                $status['title'] = "早番";
+            } elseif ($task->first()->shift_type === "遅番") {
+                $status['color'] = "#00FFFF";
+                $status['title'] = "遅番";
+            }
+        }
+
+        return $status;
+    }
+
     public function shiftDelete(Request $request)
     {
          // バリデーション
@@ -176,8 +244,8 @@ class ShiftController extends Controller
             $loggedInUser = Auth::user();
 
             $task = Shift::where('user_id', $loggedInUser->id)
-            ->where('start_date', date('Y-m-d', $now_day_timestamp))
-            ->first();
+                        ->where('start_date', date('Y-m-d', $now_day_timestamp))
+                        ->first();
             
             if ($task) {
                 $task->delete();

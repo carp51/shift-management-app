@@ -35,6 +35,7 @@ Route::prefix('user')->group(function() {
         Route::post('/home/shift-add', [ShiftController::class, 'shiftAdd'])->name('shift-add');
         Route::post('/home/shift-bulk-add', [ShiftController::class, 'shiftBulkAdd'])->name('shift-bulk-add');
         Route::post('/home/shift-get', [ShiftController::class, 'shiftGet'])->name('shift-get');
+        Route::post('/home/shift-status-get', [ShiftController::class, 'shiftStatusGet'])->name('shift-status-get');
         Route::post('/home/shift-delete', [ShiftController::class, 'shiftDelete'])->name('shift-delete');
         Route::post('/home/shift-bulk-delete', [ShiftController::class, 'shiftBulkDelete'])->name('shift-bulk-delete');
 
