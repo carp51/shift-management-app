@@ -23,10 +23,12 @@
     @if (Auth::user()->role === 'admin')
     <p>あなたは管理者です</p>
     <a href="/admin/users" class="btn btn-primary">従業員管理</a>
+    <a href="/admin/shift-planning" class="btn btn-primary">シフト人数管理</a>
+    <a href="/user/work" class="btn btn-primary">シフト管理</a>
     @elseif (Auth::user()->role === 'user')
     <p>あなたは一般ユーザーです</p>
     @endif
-    <a href="/user/work" class="btn btn-primary">シフト管理</a>
+    
 
     <div class="row mt-4">
         <div class="col-md-9">

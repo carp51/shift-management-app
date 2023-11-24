@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Shift;
+use App\Models\Planning;
 use Illuminate\Support\Facades\Auth;
 
 class ShiftController extends Controller
@@ -158,11 +159,39 @@ class ShiftController extends Controller
 
             $loggedInUser = Auth::user(); // ログインしているユーザーを取得
 
-            $task = Shift::where('store_id', $loggedInUser->store_id)
-            ->where('start_date', date('Y-m-d', $now_day_timestamp))
-            ->get();
+            $early_shift_need_number = Planning::where('store_id', $loggedInUser->store_id)
+                                    ->where('start_date', date('Y-m-d', $now_day_timestamp))
+                                    ->where('shift_type', 0)
+                                    ->first();
 
-            $shift_status_list[] = $this->generateShiftStatus($task, $now_day_timestamp);
+            $late_shift_need_number = Planning::where('store_id', $loggedInUser->store_id)
+                                    ->where('start_date', date('Y-m-d', $now_day_timestamp))
+                                    ->where('shift_type', 1)
+                                    ->first();
+
+            $task = Shift::where('store_id', $loggedInUser->store_id)
+                    ->where('start_date', date('Y-m-d', $now_day_timestamp))
+                    ->get();
+
+            $shift_status = $this->generateShiftStatus($task, $now_day_timestamp, $early_shift_need_number, $late_shift_need_number);
+
+            $shift_status_list[] = $shift_status[0];
+
+            $shift_status_list[] = [
+                'start' => date('Y-m-d', $now_day_timestamp),
+                'end' => date('Y-m-d', $now_day_timestamp),
+                'title' => "_早番 " . $shift_status[1],
+                'textColor' => $shift_status[3],
+                'color' => "rgba(255, 0, 0, 0)", 
+            ];
+
+            $shift_status_list[] = [
+                'start' => date('Y-m-d', $now_day_timestamp),
+                'end' => date('Y-m-d', $now_day_timestamp),
+                'title' => "_遅番 " .  $shift_status[2],
+                'textColor' => "$shift_status[4]",
+                'color' => "rgba(255, 0, 0, 0)", 
+            ];
 
             // 次の日に進む処理
             $now_day_timestamp = strtotime('+1 day', $now_day_timestamp);
@@ -172,30 +201,70 @@ class ShiftController extends Controller
         return $shift_status_list;
     }
 
-    private function generateShiftStatus($task, $now_day_timestamp)
+    private function generateShiftStatus($task, $now_day_timestamp, $early_shift_need_number, $late_shift_need_number)
     {
+        // デフォルトのステータス
         $status = [
             'start' => date('Y-m-d', $now_day_timestamp),
             'end' => date('Y-m-d', $now_day_timestamp),
             'display' => "background",
-            'color' => "#00FF00", // デフォルトの色
+            'color' => "#FF0000", 
         ];
 
-        if ($task->count() === 0) {
-            $status['color'] = "#FF0000";
-        } elseif ($task->count() === 1) {
-            if ($task->first()->shift_type === "通し") {
-                $status['color'] = "#00FF00";
-            } elseif ($task->first()->shift_type === "早番") {
-                $status['color'] = "#00FFFF";
-                $status['title'] = "早番";
-            } elseif ($task->first()->shift_type === "遅番") {
-                $status['color'] = "#00FFFF";
-                $status['title'] = "遅番";
+        $shift_check = [0, 0];
+        $shift_check_color = ["red", "red"];
+
+        $early_shift_need_number = $early_shift_need_number->need_number;
+        $late_shift_need_number = $late_shift_need_number->need_number;
+
+        for ($i=0; $i < count($task); $i++) { 
+            switch ($task[$i]->shift_type) {
+                case '早番':
+                    $shift_check[0] += 1;
+                    break;
+                case '遅番':
+                    $shift_check[1] += 1;
+                    break;
+                case '通し':
+                    $shift_check[0] += 1;
+                    $shift_check[1] += 1;
+                    break;
             }
         }
 
-        return $status;
+        if ($shift_check[0] == $early_shift_need_number && $shift_check[1] == $late_shift_need_number) {
+            $status['color'] = "#00FF00";
+        } elseif ($shift_check[0] < $early_shift_need_number && $shift_check[1] < $late_shift_need_number) {
+            $status['color'] = "gray";
+        } elseif ($shift_check[0] == $early_shift_need_number && $shift_check[1] < $late_shift_need_number) {
+            $status['color'] = "blue";
+        } elseif ($shift_check[0] < $early_shift_need_number && $shift_check[1] == $late_shift_need_number) {
+            $status['color'] = "blue";
+        }
+
+        if ($early_shift_need_number - $shift_check[0] == 0) {
+            $shift_check_color[0] = "black";
+        }
+        if ($late_shift_need_number - $shift_check[1] == 0) {
+            $shift_check_color[1] = "black";
+        }
+        return [$status, $early_shift_need_number - $shift_check[0], $late_shift_need_number - $shift_check[1], $shift_check_color[0], $shift_check_color[1]];
+
+        // if ($task->count() === 0) {
+        //     $status['color'] = "#FF0000";
+        // } elseif ($task->count() === 1) {
+        //     if ($task->first()->shift_type === "通し") {
+        //         $status['color'] = "#00FF00";
+        //     } elseif ($task->first()->shift_type === "早番") {
+        //         $status['color'] = "#00FFFF";
+        //         $status['title'] = "早番";
+        //     } elseif ($task->first()->shift_type === "遅番") {
+        //         $status['color'] = "#00FFFF";
+        //         $status['title'] = "遅番";
+        //     }
+        // }
+
+        // return $status;
     }
 
     public function shiftDelete(Request $request)

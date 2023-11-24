@@ -12,7 +12,7 @@
     <h3>従業員の希望シフト</h3>
     <div id='work_hope_calendar'></div>
 
-    <a href="/user/home" class="btn btn-primary">自動作成</a>
+    <a class="btn btn-primary" id="shiftCreate">自動作成</a>
 
     <div id='work_confirm_calendar'></div>
 </body>

@@ -177,23 +177,75 @@ let calendar = new Calendar(calendarEl, {
             // バリデーションエラーなど
             alert("データの取得に失敗しました");
           });
+          axios
+            .post("../../admin/shift-planning/shift-planning-add", {
+                start_date: info.start.valueOf(),
+                end_date: info.end.valueOf(),
+            })
+            .then((response) => {
+            })
+            .catch((response) => {
+                //バリデーションエラーなど
+                alert("登録に失敗しました");
+            });
       },
 
     eventClick: function (info) {
-        if (confirm('削除しますか？')) {
-            axios
-                .post("home/shift-delete", {
-                    start_date: info.event._instance.range.start.valueOf(),
-                    end_date: info.event._instance.range.end.valueOf(),
-                })
-                .then(() => {
-                })
-                .catch(() => {
-                    // バリデーションエラーなど
-                    alert("削除に失敗しました");
-                });
-            info.event.remove()
+        var yourVariable = info.event._def.title; // 変数の初期化
+        if (yourVariable.trim().charAt(0) === '_' || yourVariable === '') {
+            var shiftType = null;
+    
+            $('#exampleModal').modal('show').on('click', function () {
+                $('.early-shift-btn, .late-shift-btn, .fulltime-shift-btn').off('click');
+            });
+    
+            $('.early-shift-btn, .late-shift-btn, .fulltime-shift-btn').on('click', function () {
+                shiftType = $(this).text(); // クリックされたボタンのテキストを取得
+                // ここで取得した shiftType を使って必要な処理を行う
+                if (shiftType) {
+                    // Laravelの登録処理の呼び出し
+                    axios
+                        .post("/user/home/shift-add", {
+                            start_date: info.start.valueOf(),
+                            end_date: info.end.valueOf(),
+                            shift_type: shiftType,
+                        })
+                        .then(() => {
+                            // イベントの追加
+                            calendar.addEvent({
+                                title: shiftType,
+                                start: info.start,
+                                end: info.end,
+                                allDay: true,
+                            }, true
+                            );
+                        })
+                        .catch(() => {
+                            // バリデーションエラーなど
+                            alert("登録に失敗しました");
+                        });
+                }
+                $('#exampleModal').hide();
+                $('.early-shift-btn, .late-shift-btn, .fulltime-shift-btn').off('click');
+            });
+        } else {
+            if (confirm('削除しますか？')) {
+                axios
+                    .post("home/shift-delete", {
+                        start_date: info.event._instance.range.start.valueOf(),
+                        end_date: info.event._instance.range.end.valueOf(),
+                    })
+                    .then(() => {
+                    })
+                    .catch(() => {
+                        // バリデーションエラーなど
+                        alert("削除に失敗しました");
+                    });
+                info.event.remove()
+            }
         }
+        
     },
+      
 });
 calendar.render();
