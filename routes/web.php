@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\UsersManagemantController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\WorkController;
+use App\Http\Controllers\ShiftPlanningController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,6 +43,8 @@ Route::prefix('user')->group(function() {
         Route::get('/work',[WorkController::class,'index']) -> name('common.work');
         Route::post('/work/all-shift-get',[WorkController::class,'allShiftGet']) -> name('all-shift-get');
         Route::post('/work/all-member-get',[WorkController::class,'allMemberGet']) -> name('all-member-get');
+        // Route::post('/work/shift-create',[WorkController::class,'shiftCreate']) -> name('shift-create');
+
     });
 });
 
@@ -53,6 +56,10 @@ Route::prefix('admin')->group(function() {
         // Route::get('/home',[AdminController::class,'index']) -> name('common.home');
         Route::resource('users', UsersManagemantController::class);
         Route::post('logout',[AdminController::class,'logout'])->name('admin.logout');
+        Route::get('/shift-planning',[ShiftPlanningController::class,'index']) -> name('admin.shiftPlanning');
+        Route::post('/shift-planning/shift-planning-add',[ShiftPlanningController::class,'shiftPlanningAdd']) -> name('shift-planning-add');
+        Route::post('/shift-planning/shift-planning-get',[ShiftPlanningController::class,'shiftPlanningGet']) -> name('shift-planning-get');
+        Route::post('/shift-planning/shift-planning-edit',[ShiftPlanningController::class,'shiftPlanningEdit']) -> name('shift-planning-edit');
     });
 });
 
