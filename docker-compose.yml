@@ -113,7 +113,7 @@ services:
             PMA_HOST: mysql
         networks:
             - sail
-            
+               
 networks:
     sail:
         driver: bridge

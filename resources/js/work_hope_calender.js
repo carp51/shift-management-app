@@ -14,6 +14,21 @@ var currentDate = new Date();
 var nextMonthDate = new Date(currentDate);
 nextMonthDate.setMonth(currentDate.getMonth() + 1);
 
+document.getElementById('shiftCreate').addEventListener('click', function(){
+    axios
+        .post("/user/work/shift-create", {
+        })
+        .then((response) => {
+            // 追加したイベントを削除
+            // calendar.removeAllEvents();
+            console.log(response);
+        })
+        .catch(() => {
+            // エラー時の処理
+            alert("登録に失敗しました");
+        });
+});
+
 let calendar = new Calendar(calendarEl, {
     schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
     plugins: [interactionPlugin, resourceTimelinePlugin],
