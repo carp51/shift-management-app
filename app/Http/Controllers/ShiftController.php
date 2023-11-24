@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Shift;
 use App\Models\Planning;
+use App\Models\UserShiftConfirm;
 use Illuminate\Support\Facades\Auth;
 
 class ShiftController extends Controller
@@ -324,5 +325,69 @@ class ShiftController extends Controller
             $now_day_timestamp = strtotime('+1 day', $now_day_timestamp);
         }
         return;
+    }
+
+    public function userShiftConfirm(Request $request)
+    {
+        $display_start_month = date('Y-m-1', $request->input('display_start_day') / 1000 + 24 * 60 * 60 * 8);
+        $loggedInUser = Auth::user();
+
+        // 同じ月の確定情報がすでに存在するか確認
+        $existingRecord = UserShiftConfirm::where('user_id', $loggedInUser->id)
+        ->where('month', $display_start_month)
+        ->first();
+
+        $confirm_status = 1;
+
+        if ($existingRecord) {
+            switch ($existingRecord->confirm_status) {
+                case 1:
+                    $existingRecord->confirm_status = 0;
+                    $confirm_status = 0;
+                    break;
+                
+                case 0:
+                    $existingRecord->confirm_status = 1;
+                    $confirm_status = 1;
+                    break;
+            }
+            $existingRecord->save();
+            return $confirm_status;
+        }
+
+        $task = new UserShiftConfirm;
+        $task -> user_id = $loggedInUser -> id;
+        $task -> month = $display_start_month;
+        $task -> confirm_status = 1;
+
+        $task->save();
+        return $confirm_status;
+    }
+
+    public function userShiftConfirmStatusGet(Request $request)
+    {
+        $display_start_month = date('Y-m-1', $request->input('display_start_day') / 1000 + 24 * 60 * 60 * 8);
+        $loggedInUser = Auth::user();
+
+        // 同じ月の確定情報がすでに存在するか確認
+        $existingRecord = UserShiftConfirm::where('user_id', $loggedInUser->id)
+        ->where('month', $display_start_month)
+        ->first();
+
+        $confirm_status = 0;
+
+        if ($existingRecord) {
+            switch ($existingRecord->confirm_status) {
+                case 1:
+                    $confirm_status = 1;
+                    break;
+                
+                case 0:
+                    $confirm_status = 0;
+                    break;
+            }
+        }
+
+        return $confirm_status;
     }
 }

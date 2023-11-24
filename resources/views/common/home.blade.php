@@ -31,9 +31,12 @@
     
 
     <div class="row mt-4">
-        <div class="col-md-9">
+        <div class="col-md-4 mr-auto">
             <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#bulkSelectModal">一括選択</button>
             <button type="button" class="btn btn-danger mb-3" data-toggle="modal" data-target="#bulkDeleteModal">一括削除</button>
+        </div>
+        <div class="col-md-2 ml-auto">
+            <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#userShiftConfirmModal" id="userShiftConfirmButton"></button>
         </div>
     </div>
 
@@ -80,6 +83,22 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">いいえ</button>
                     <button type="button" class="btn btn-danger" id="bulkDeleteDecision" data-dismiss="modal">はい</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- シフト確定のときに出るモーダル -->
+    <div class="modal fade" id="userShiftConfirmModal" tabindex="-1" role="dialog" aria-labelledby="basicModal"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4>希望シフトを確定しますか</h4>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">いいえ</button>
+                    <button type="button" class="btn btn-primary" id="userShiftConfirmDecision" data-dismiss="modal">はい</button>
                 </div>
             </div>
         </div>

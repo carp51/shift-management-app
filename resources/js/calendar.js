@@ -78,6 +78,27 @@ document.getElementById('bulkDeleteDecision').addEventListener('click', function
         });
 });
 
+// シフト確定ボタンが押されたら
+document.getElementById('userShiftConfirmDecision').addEventListener('click', function(info, successCallback, failureCallback){
+    axios
+        .post("/user/home/user-shift-confirm", {
+            display_start_day: displayStartDay,
+        })
+        .then((response) => {
+            if (response.data){
+                document.getElementById('userShiftConfirmButton').innerText = '確定済み';
+            } else {
+                document.getElementById('userShiftConfirmButton').innerText = 'シフト確定';
+            };
+        })
+        .catch(() => {
+            // エラー時の処理
+            alert("登録に失敗しました");
+        });
+});
+
+
+
 // 現在の日付を取得
 var currentDate = new Date();
 
@@ -175,14 +196,29 @@ let calendar = new Calendar(calendarEl, {
           })
           .catch(() => {
             // バリデーションエラーなど
-            alert("データの取得に失敗しました");
+            document.location.reload();
           });
-          axios
+        axios
             .post("../../admin/shift-planning/shift-planning-add", {
                 start_date: info.start.valueOf(),
                 end_date: info.end.valueOf(),
             })
             .then((response) => {
+            })
+            .catch((response) => {
+                //バリデーションエラーなど
+                alert("登録に失敗しました");
+            });
+        axios
+            .post("/user/home/user-shift-confirm-status-get", {
+                display_start_day: displayStartDay,
+            })
+            .then((response) => {
+                if (response.data){
+                    document.getElementById('userShiftConfirmButton').innerText = '確定済み';
+                } else {
+                    document.getElementById('userShiftConfirmButton').innerText = 'シフト確定';
+                };
             })
             .catch((response) => {
                 //バリデーションエラーなど
@@ -202,20 +238,22 @@ let calendar = new Calendar(calendarEl, {
             $('.early-shift-btn, .late-shift-btn, .fulltime-shift-btn').on('click', function () {
                 shiftType = $(this).text(); // クリックされたボタンのテキストを取得
                 // ここで取得した shiftType を使って必要な処理を行う
+                console.log(shiftType);
                 if (shiftType) {
                     // Laravelの登録処理の呼び出し
+                    console.log();
                     axios
                         .post("/user/home/shift-add", {
-                            start_date: info.start.valueOf(),
-                            end_date: info.end.valueOf(),
+                            start_date: info.event._instance.range.start.valueOf(),
+                            end_date: info.event._instance.range.end.valueOf(),
                             shift_type: shiftType,
                         })
                         .then(() => {
                             // イベントの追加
                             calendar.addEvent({
                                 title: shiftType,
-                                start: info.start,
-                                end: info.end,
+                                start: info.event._instance.range.start,
+                                end: info.event._instance.range.end,
                                 allDay: true,
                             }, true
                             );
