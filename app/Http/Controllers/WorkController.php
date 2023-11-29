@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Shift;
 use App\Models\User;
+use App\Models\UserShiftConfirm;
 use Illuminate\Support\Facades\Auth;
+use DB;
 
 class WorkController extends Controller
 {
@@ -42,11 +44,13 @@ class WorkController extends Controller
 
     public function allMemberGet(Request $request)
     {
+        $display_start_month = date('Y-m-1', $request->input('display_start_day') / 1000);
+        $display_status = $request->input('display_status');
         $loggedInUser = Auth::user(); // ログインしているユーザーを取得
 
         $storeId = $loggedInUser -> store_id;
 
-        return User::query()
+        $users =  User::query()
             ->select(
                 // FullCalendarの形式に合わせる
                 'id as id',
@@ -55,5 +59,32 @@ class WorkController extends Controller
             // FullCalendarの表示範囲のみ表示
             ->where('store_id', '=', $storeId)
             ->get();
+
+        if ($display_status == 'confirm') {
+            return $users;
+        }
+
+        for ($i=0; $i < $users->count(); $i++) { 
+            // 各従業員の表示月のシフト確定状況を取得
+            $shiftConfirmStatus = UserShiftConfirm::where('user_id', $users[$i]['id'])
+            ->where('month', $display_start_month)
+            ->first();
+
+            if ($shiftConfirmStatus === NULL) {
+                $users[$i]['title'] = $users[$i]['title'] . " ：未確定";
+            } else {
+                switch ($shiftConfirmStatus->confirm_status) {
+                    case 0:
+                        $users[$i]['title'] = $users[$i]['title'] . " ：未確定";
+                        break;
+                    
+                    case 1:
+                        $users[$i]['title'] = $users[$i]['title'] . " ：確定";
+                        break;
+                }
+            }
+        }
+
+        return $users;
     }
 }

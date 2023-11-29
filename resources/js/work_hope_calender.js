@@ -53,14 +53,19 @@ let calendar = new Calendar(calendarEl, {
 
     events: function (info, successCallback, failureCallback) {
         // Laravelのイベント取得処理の呼び出し
+        console.log(info);
         axios
             .post("work/all-member-get", {
+                display_start_day: info.start.valueOf(),
+                display_status: 'hope'
             })
             .then((response) => {
                 // // カレンダーに読み込み
                 var event_data = response.data;
 
                 var resource_data = event_data;
+
+                console.log(response);
 
                 // リソースをセット
                 calendar.setOption('resources', resource_data);

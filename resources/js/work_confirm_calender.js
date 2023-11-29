@@ -40,6 +40,8 @@ let calendar = new Calendar(calendarEl, {
         // Laravelのイベント取得処理の呼び出し
         axios
             .post("work/all-member-get", {
+                display_start_day: info.start.valueOf(),
+                display_status: 'confirm'
             })
             .then((response) => {
                 // // カレンダーに読み込み

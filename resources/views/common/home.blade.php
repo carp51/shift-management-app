@@ -94,7 +94,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4>希望シフトを確定しますか</h4>
+                    <h4 id="userShiftConfirmModalMessage">希望シフトを確定しますか？</h4>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">いいえ</button>
