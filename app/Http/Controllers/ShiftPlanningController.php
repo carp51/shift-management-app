@@ -10,7 +10,7 @@ class ShiftPlanningController extends Controller
 {
     public function index()
     {
-        return view('admin.shiftPlanning');
+        return view('admin.shift_planning');
     }
 
     public function shiftPlanningAdd(Request $request)

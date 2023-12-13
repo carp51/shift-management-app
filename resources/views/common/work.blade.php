@@ -8,11 +8,13 @@
     @vite(['resources/css/app.css', 'resources/js/work_hope_calender.js', 'resources/js/work_confirm_calender.js'])
 </head>
 <body>
+    @include("components.header")
+    
     <a href="/user/home" class="btn btn-primary">ホーム画面</a>
     <h3>従業員の希望シフト</h3>
     <div id='work_hope_calendar'></div>
 
-    <a class="btn btn-primary" id="shiftCreate">自動作成</a>
+    <a class="btn btn-primary d-block mx-auto" id="shiftTempCreate" style="width: 200px; color:white; margin-bottom:30px; margin-top:30px;">一時作成</a>
 
     <div id='work_confirm_calendar'></div>
 </body>

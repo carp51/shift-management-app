@@ -14,7 +14,7 @@ var currentDate = new Date();
 var nextMonthDate = new Date(currentDate);
 nextMonthDate.setMonth(currentDate.getMonth() + 1);
 
-document.getElementById('shiftCreate').addEventListener('click', function(){
+document.getElementById('shiftTempCreate').addEventListener('click', function(){
     axios
         .post("/user/work/shift-create", {
         })

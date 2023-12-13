@@ -7,6 +7,8 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
+@include("components.header")
+
 <div id="app" class="p-5">
         {{ \Illuminate\Support\Facades\Auth::user()->store->name }}のメンバー
         <!-- 一覧表示するブロック ① -->

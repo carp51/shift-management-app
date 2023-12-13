@@ -10,6 +10,12 @@ use Illuminate\Support\Facades\Auth;
 
 class ShiftController extends Controller
 {
+
+    public function index()
+    {
+        return view('common.shift_hope');
+    }
+
     public function shiftAdd(Request $request)
     {
         // バリデーション

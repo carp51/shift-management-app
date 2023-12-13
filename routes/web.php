@@ -33,19 +33,21 @@ Route::prefix('user')->group(function() {
 
     Route::middleware('auth')->group(function (){
         Route::get('/home',[AdminController::class,'index']) -> name('common.home');
-        Route::post('/home/shift-add', [ShiftController::class, 'shiftAdd'])->name('shift-add');
-        Route::post('/home/shift-bulk-add', [ShiftController::class, 'shiftBulkAdd'])->name('shift-bulk-add');
-        Route::post('/home/shift-get', [ShiftController::class, 'shiftGet'])->name('shift-get');
-        Route::post('/home/shift-status-get', [ShiftController::class, 'shiftStatusGet'])->name('shift-status-get');
-        Route::post('/home/shift-delete', [ShiftController::class, 'shiftDelete'])->name('shift-delete');
-        Route::post('/home/shift-bulk-delete', [ShiftController::class, 'shiftBulkDelete'])->name('shift-bulk-delete');
-        Route::post('/home/user-shift-confirm', [ShiftController::class, 'userShiftConfirm'])->name('user-shift-confirm');
-        Route::post('/home/user-shift-confirm-status-get', [ShiftController::class, 'userShiftConfirmStatusGet'])->name('user-shift-confirm-status-get');
+
+        Route::get('/home/shift-hope',[ShiftController::class,'index']) -> name('common.shift_hope');
+        Route::post('/home/shift-hope/shift-add', [ShiftController::class, 'shiftAdd'])->name('shift-add');
+        Route::post('/home/shift-hope/shift-bulk-add', [ShiftController::class, 'shiftBulkAdd'])->name('shift-bulk-add');
+        Route::post('/home/shift-hope/shift-get', [ShiftController::class, 'shiftGet'])->name('shift-get');
+        Route::post('/home/shift-hope/shift-status-get', [ShiftController::class, 'shiftStatusGet'])->name('shift-status-get');
+        Route::post('/home/shift-hope/shift-delete', [ShiftController::class, 'shiftDelete'])->name('shift-delete');
+        Route::post('/home/shift-hope/shift-bulk-delete', [ShiftController::class, 'shiftBulkDelete'])->name('shift-bulk-delete');
+        Route::post('/home/shift-hope/user-shift-confirm', [ShiftController::class, 'userShiftConfirm'])->name('user-shift-confirm');
+        Route::post('/home/shift-hope/user-shift-confirm-status-get', [ShiftController::class, 'userShiftConfirmStatusGet'])->name('user-shift-confirm-status-get');
 
         Route::get('/work',[WorkController::class,'index']) -> name('common.work');
         Route::post('/work/all-shift-get',[WorkController::class,'allShiftGet']) -> name('all-shift-get');
         Route::post('/work/all-member-get',[WorkController::class,'allMemberGet']) -> name('all-member-get');
-
+        Route::post('/work/shift-temp-create',[WorkController::class,'shiftTempCreate']) -> name('shift-temp-create');
     });
 });
 
@@ -57,7 +59,7 @@ Route::prefix('admin')->group(function() {
         // Route::get('/home',[AdminController::class,'index']) -> name('common.home');
         Route::resource('users', UsersManagemantController::class);
         Route::post('logout',[AdminController::class,'logout'])->name('admin.logout');
-        Route::get('/shift-planning',[ShiftPlanningController::class,'index']) -> name('admin.shiftPlanning');
+        Route::get('/shift-planning',[ShiftPlanningController::class,'index']) -> name('admin.shift_planning');
         Route::post('/shift-planning/shift-planning-add',[ShiftPlanningController::class,'shiftPlanningAdd']) -> name('shift-planning-add');
         Route::post('/shift-planning/shift-planning-get',[ShiftPlanningController::class,'shiftPlanningGet']) -> name('shift-planning-get');
         Route::post('/shift-planning/shift-planning-edit',[ShiftPlanningController::class,'shiftPlanningEdit']) -> name('shift-planning-edit');

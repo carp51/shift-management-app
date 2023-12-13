@@ -1,4 +1,4 @@
-#calendar {
+#calendar,#shift_view_calendar {
     height: 80vh;
     /* 画面の高さの80%に制限 */
     max-width: 1400px;

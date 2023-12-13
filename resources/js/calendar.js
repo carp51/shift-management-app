@@ -8,6 +8,8 @@ var calendarEl = document.getElementById("calendar");
 // カレンダーで選択された曜日とシフトを取得
 var displayStartDay;
 var displayEndDay;
+// 表示月のシフト確定状況
+var displayShiftConfirm;
 
 document.getElementById('bulkSelectDecision').addEventListener('click', function(){
     var day_of_week_checks = document.getElementsByClassName('day-of-week-checks');
@@ -31,7 +33,7 @@ document.getElementById('bulkSelectDecision').addEventListener('click', function
     // 選択された曜日とシフトがある場合
     if (day_of_week_checked_list.length != 0 && shift_checked != '') {
         axios
-            .post("/user/home/shift-bulk-add", {
+            .post("/user/home/shift-hope/shift-bulk-add", {
                 display_start_day: displayStartDay,
                 display_end_day: displayEndDay,
                 shift_checked: shift_checked,
@@ -63,7 +65,7 @@ document.getElementById('bulkSelectDecision').addEventListener('click', function
 
 document.getElementById('bulkDeleteDecision').addEventListener('click', function(info, successCallback, failureCallback){
     axios
-        .post("/user/home/shift-bulk-delete", {
+        .post("/user/home/shift-hope/shift-bulk-delete", {
             display_start_day: displayStartDay,
             display_end_day: displayEndDay,
         })
@@ -81,14 +83,20 @@ document.getElementById('bulkDeleteDecision').addEventListener('click', function
 // シフト確定ボタンが押されたら
 document.getElementById('userShiftConfirmDecision').addEventListener('click', function(info, successCallback, failureCallback){
     axios
-        .post("/user/home/user-shift-confirm", {
+        .post("/user/home/shift-hope/user-shift-confirm", {
             display_start_day: displayStartDay,
         })
         .then((response) => {
             if (response.data){
-                document.getElementById('userShiftConfirmButton').innerText = '確定済み';
+                document.getElementById('userShiftConfirmButton').innerText = 'シフト確定取り消し';
+                document.getElementById('userShiftConfirmText').innerText = '希望シフト:  確定';
+                document.getElementById('userShiftConfirmModalMessage').innerText = '希望シフトを取り消しますか？';
+                displayShiftConfirm = 1;
             } else {
                 document.getElementById('userShiftConfirmButton').innerText = 'シフト確定';
+                document.getElementById('userShiftConfirmText').innerText = '希望シフト:  未確定';
+                document.getElementById('userShiftConfirmModalMessage').innerText = '希望シフトを確定しますか？';
+                displayShiftConfirm = 0;
             };
         })
         .catch(() => {
@@ -128,6 +136,11 @@ let calendar = new Calendar(calendarEl, {
             return
         }
 
+        if (displayShiftConfirm === 1) {
+            alert("シフト確定済みのためシフトを追加できません")
+            return;
+        }
+
         var shiftType = null;
 
         $('#exampleModal').modal('show').on('click', function () {
@@ -140,20 +153,21 @@ let calendar = new Calendar(calendarEl, {
             if (shiftType) {
                 // Laravelの登録処理の呼び出し
                 axios
-                    .post("/user/home/shift-add", {
+                    .post("/user/home/shift-hope/shift-add", {
                         start_date: info.start.valueOf(),
                         end_date: info.end.valueOf(),
                         shift_type: shiftType,
                     })
                     .then(() => {
                         // イベントの追加
-                        calendar.addEvent({
-                            title: shiftType,
-                            start: info.start,
-                            end: info.end,
-                            allDay: true,
-                        }, true
-                        );
+                        // calendar.addEvent({
+                        //     title: shiftType,
+                        //     start: info.start,
+                        //     end: info.end,
+                        //     allDay: true,
+                        // }, true
+                        // );
+                        document.location.reload();
                     })
                     .catch(() => {
                         // バリデーションエラーなど
@@ -171,12 +185,12 @@ let calendar = new Calendar(calendarEl, {
         displayEndDay = info.end.valueOf();
       
         // Laravelのイベント取得処理の呼び出し
-        const shiftPromise = axios.post("home/shift-get", {
+        const shiftPromise = axios.post("shift-hope/shift-get", {
           start_date: info.start.valueOf(),
           end_date: info.end.valueOf(),
         });
       
-        const shiftStatusPromise = axios.post("home/shift-status-get", {
+        const shiftStatusPromise = axios.post("shift-hope/shift-status-get", {
           start_date: info.start.valueOf(),
           end_date: info.end.valueOf(),
         });
@@ -210,14 +224,20 @@ let calendar = new Calendar(calendarEl, {
                 alert("登録に失敗しました");
             });
         axios
-            .post("/user/home/user-shift-confirm-status-get", {
+            .post("/user/home/shift-hope/user-shift-confirm-status-get", {
                 display_start_day: displayStartDay,
             })
             .then((response) => {
                 if (response.data){
-                    document.getElementById('userShiftConfirmButton').innerText = '確定済み';
+                    document.getElementById('userShiftConfirmButton').innerText = '確定取り消し';
+                    document.getElementById('userShiftConfirmText').innerText = '希望シフト: 確定';
+                    document.getElementById('userShiftConfirmModalMessage').innerText = '希望シフトを取り消しますか？';
+                    displayShiftConfirm = 1;
                 } else {
                     document.getElementById('userShiftConfirmButton').innerText = 'シフト確定';
+                    document.getElementById('userShiftConfirmText').innerText = '希望シフト:  未確定';
+                    document.getElementById('userShiftConfirmModalMessage').innerText = '希望シフトを確定しますか？';
+                    displayShiftConfirm = 0;
                 };
             })
             .catch((response) => {
@@ -236,6 +256,11 @@ let calendar = new Calendar(calendarEl, {
             });
     
             $('.early-shift-btn, .late-shift-btn, .fulltime-shift-btn').on('click', function () {
+                if (displayShiftConfirm === 1) {
+                    alert("シフト確定済みのためシフトを追加できません")
+                    return;
+                }
+
                 shiftType = $(this).text(); // クリックされたボタンのテキストを取得
                 // ここで取得した shiftType を使って必要な処理を行う
                 console.log(shiftType);
@@ -243,7 +268,7 @@ let calendar = new Calendar(calendarEl, {
                     // Laravelの登録処理の呼び出し
                     console.log();
                     axios
-                        .post("/user/home/shift-add", {
+                        .post("/user/home/shift-hope/shift-add", {
                             start_date: info.event._instance.range.start.valueOf(),
                             end_date: info.event._instance.range.end.valueOf(),
                             shift_type: shiftType,
@@ -257,6 +282,7 @@ let calendar = new Calendar(calendarEl, {
                                 allDay: true,
                             }, true
                             );
+                            document.location.reload();
                         })
                         .catch(() => {
                             // バリデーションエラーなど
@@ -267,13 +293,19 @@ let calendar = new Calendar(calendarEl, {
                 $('.early-shift-btn, .late-shift-btn, .fulltime-shift-btn').off('click');
             });
         } else {
+            if (displayShiftConfirm === 1) {
+                alert("シフト確定済みのためシフトを削除できません")
+                return;
+            }
+            
             if (confirm('削除しますか？')) {
                 axios
-                    .post("home/shift-delete", {
+                    .post("shift-hope/shift-delete", {
                         start_date: info.event._instance.range.start.valueOf(),
                         end_date: info.event._instance.range.end.valueOf(),
                     })
                     .then(() => {
+                        document.location.reload();
                     })
                     .catch(() => {
                         // バリデーションエラーなど
