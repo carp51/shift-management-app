@@ -7,6 +7,7 @@ use App\Http\Controllers\UsersManagemantController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\WorkController;
 use App\Http\Controllers\ShiftPlanningController;
+use App\Http\Controllers\WorkConfirmController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +34,7 @@ Route::prefix('user')->group(function() {
 
     Route::middleware('auth')->group(function (){
         Route::get('/home',[AdminController::class,'index']) -> name('common.home');
+        Route::post('/home/user-shift-show',[WorkConfirmController::class,'userShiftShow']) -> name('user-shift-show');
 
         Route::get('/home/shift-hope',[ShiftController::class,'index']) -> name('common.shift_hope');
         Route::post('/home/shift-hope/shift-add', [ShiftController::class, 'shiftAdd'])->name('shift-add');
@@ -48,6 +50,12 @@ Route::prefix('user')->group(function() {
         Route::post('/work/all-shift-get',[WorkController::class,'allShiftGet']) -> name('all-shift-get');
         Route::post('/work/all-member-get',[WorkController::class,'allMemberGet']) -> name('all-member-get');
         Route::post('/work/shift-temp-create',[WorkController::class,'shiftTempCreate']) -> name('shift-temp-create');
+
+        Route::post('/work/confirm/all-shift-get',[WorkConfirmController::class,'allShiftGet']) -> name('all-shift-get');
+        Route::post('/work/confirm/shift-add',[WorkConfirmController::class,'shiftAdd']) -> name('shift-add');
+        Route::post('/work/confirm/shift-delete',[WorkConfirmController::class,'shiftDelete']) -> name('shift-delete');
+        Route::post('/work/confirm/shift-show',[WorkConfirmController::class,'shiftShow']) -> name('shift-show');
+        Route::post('/work/confirm/shift-show-status-get',[WorkConfirmController::class,'shiftShowStatusGet']) -> name('shift-show-status-get');
     });
 });
 

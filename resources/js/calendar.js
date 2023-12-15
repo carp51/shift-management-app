@@ -88,7 +88,7 @@ document.getElementById('userShiftConfirmDecision').addEventListener('click', fu
         })
         .then((response) => {
             if (response.data){
-                document.getElementById('userShiftConfirmButton').innerText = 'シフト確定取り消し';
+                document.getElementById('userShiftConfirmButton').innerText = '確定取り消し';
                 document.getElementById('userShiftConfirmText').innerText = '希望シフト:  確定';
                 document.getElementById('userShiftConfirmModalMessage').innerText = '希望シフトを取り消しますか？';
                 displayShiftConfirm = 1;

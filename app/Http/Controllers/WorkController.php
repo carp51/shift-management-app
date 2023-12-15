@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Shift;
 use App\Models\User;
+use App\Models\Work;
 use App\Models\UserShiftConfirm;
 use Illuminate\Support\Facades\Auth;
 use DB;
@@ -13,7 +14,7 @@ class WorkController extends Controller
 {
     public function index()
    {
-       return view('common.work');
+       return view('common.work_confirm');
    }
 
    public function allShiftGet(Request $request)
@@ -100,17 +101,64 @@ class WorkController extends Controller
         $start_date = date('Y-m-1', $request->input('start_date') / 1000);
         $end_date = date('Y-m-1', $request->input('end_date') / 1000);
 
-        return Shift::query()
+        $loggedInUser = Auth::user(); // ログインしているユーザーを取得
+        $storeId = $loggedInUser -> store_id;
+
+        $task = Shift::query()
             ->select(
                 // FullCalendarの形式に合わせる
-                'start_date as start',
-                'end_date as end',
-                'shift_type as title',
-                'user_id as resourceId'
+                'start_date',
+                'end_date',
+                'shift_type',
+                'user_id',
+                'store_id'
             )
             // FullCalendarの表示範囲のみ表示
             ->where('start_date', '>=', $start_date)
             ->where('end_date', '<=', $end_date)
+            ->where('store_id', '=', $storeId)
             ->get();
+
+        $delete_task = Work::query()
+            ->select(
+                // FullCalendarの形式に合わせる
+                'start_date',
+                'end_date',
+                'shift_type',
+                'user_id',
+                'store_id'
+            )
+            // FullCalendarの表示範囲のみ表示
+            ->where('start_date', '>=', $start_date)
+            ->where('end_date', '<=', $end_date)
+            ->where('store_id', '=', $storeId)
+            ->delete();
+
+        for ($i=0; $i < $task->count(); $i++) { 
+            // 登録処理
+            $work = new Work;
+
+            $work->start_date = $task[$i]['start_date'];
+            $work->end_date = $task[$i]['end_date'];
+            $work->shift_type = $task[$i]['shift_type'];
+
+            $work->user_id = $task[$i]['user_id'];
+            $work->store_id = $task[$i]['store_id'];
+
+            // 既存のレコードがあるか確認
+            $existingWork = Work::where([
+                'start_date' => $work->start_date,
+                'end_date' => $work->end_date,
+                'shift_type' => $work->shift_type,
+                'user_id' => $work->user_id,
+                'store_id' => $work->store_id,
+            ])->first();
+
+            if (!$existingWork) {
+                $work->save();
+            } 
+        }
+
+        return;
     }
 }
