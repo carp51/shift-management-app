@@ -12,6 +12,50 @@ var currentDate = new Date();
 var nextMonthDate = new Date(currentDate);
 nextMonthDate.setMonth(currentDate.getMonth() + 1);
 
+var currentVal = 0;
+
+// JavaScriptでプラスボタンのクリックイベントを設定
+document.getElementById('plus-btn').addEventListener('click', function () {
+    // 現在の値を取得し、1を加えて再設定
+    currentVal = parseInt(document.getElementById('counter-input').value, 10) + 1;
+    document.getElementById('counter-input').value = currentVal;
+    console.log(currentVal, "p");
+});
+
+// JavaScriptでマイナスボタンのクリックイベントを設定
+document.getElementById('minus-btn').addEventListener('click', function () {
+    // 現在の値を取得し、1を減らして再設定
+    if (currentVal - 1 >= 0) {
+        currentVal = parseInt(document.getElementById('counter-input').value, 10) - 1;
+        document.getElementById('counter-input').value = currentVal;
+    }
+    console.log(currentVal, "m");
+});
+
+var title;
+var start_date;
+var end_date;
+
+// JavaScriptで決定ボタンのクリックイベントを設定
+document.getElementById('counter-confirm').addEventListener('click', function (info) {
+    console.log(info);
+    axios
+        .post("shift-planning/shift-planning-edit", {
+            start_date: start_date,
+            end_date: end_date,
+            title: title,
+            need_number: currentVal
+        })
+        .then((response) => {
+            console.log(response);
+            document.location.reload();
+        })
+        .catch(() => {
+            // バリデーションエラーなど
+            alert("変更に失敗しました");
+        });
+});
+
 let calendar = new Calendar(calendarEl, {
     plugins: [dayGridPlugin, interactionPlugin],
     initialView: "dayGridMonth",
@@ -50,24 +94,19 @@ let calendar = new Calendar(calendarEl, {
             });
         },
     
-    // 人数の変更機能は追々やっていく
-    // eventClick: function (info) {
-    //     console.log(info);
-    //     if (confirm('削除しますか？')) {
-    //         axios
-    //             .post("shift-planning/shift-planning-edit", {
-    //                 start_date: info.event._instance.range.start.valueOf(),
-    //                 end_date: info.event._instance.range.end.valueOf(),
-    //             })
-    //             .then(() => {
-    //             })
-    //             .catch(() => {
-    //                 // バリデーションエラーなど
-    //                 alert("削除に失敗しました");
-    //             });
-    //         info.event.remove()
-    //     }
-    // },
+    eventClick: function (info) {
+        start_date = info.event._instance.range.start.valueOf();
+        end_date = info.event._instance.range.end.valueOf();
+        title = info.event._def.title;
+
+        var str = info.event._def.title;
+        currentVal = parseInt(str.substr(str.indexOf('_') + 1), 10);
+        document.getElementById('counter-input').value = currentVal;
+
+        $('#counter-modal').modal('show').on('click', function () {
+            $('.btn btn-secondary').off('click');
+        });
+    },
         
 });
 calendar.render();

@@ -120,6 +120,30 @@ class ShiftPlanningController extends Controller
 
     public function shiftPlanningEdit(Request $request)
     {
-        
+        $loggedInUser = Auth::user(); // ログインしているユーザーを取得
+
+        // カレンダー表示期間
+        $start_date = date('Y-m-d', $request->input('start_date') / 1000);
+        $end_date = date('Y-m-d', $request->input('end_date') / 1000 - 24 * 60 * 60);
+
+        $title = $request->input('title');
+
+        if (mb_strstr($title, '_', true) == '早番') {
+            $shift_type = 0;
+        } else {
+            $shift_type = 1;
+        }
+
+        $task = Planning::where('start_date', $start_date)
+                        ->where('end_date', $end_date)
+                        ->where('shift_type', $shift_type)
+                        ->where('store_id', $loggedInUser -> store_id)
+                        ->first();
+
+        $task -> need_number = $request->input('need_number');
+
+        $task -> save();
+
+        return $task;
     }
 }
