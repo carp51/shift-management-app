@@ -71,6 +71,7 @@ Route::prefix('admin')->group(function() {
         Route::post('/shift-planning/shift-planning-add',[ShiftPlanningController::class,'shiftPlanningAdd']) -> name('shift-planning-add');
         Route::post('/shift-planning/shift-planning-get',[ShiftPlanningController::class,'shiftPlanningGet']) -> name('shift-planning-get');
         Route::post('/shift-planning/shift-planning-edit',[ShiftPlanningController::class,'shiftPlanningEdit']) -> name('shift-planning-edit');
+        Route::post('/shift-planning/shift-planning-bulk-edit',[ShiftPlanningController::class,'shiftPlanningBulkEdit']) -> name('shift-planning-bulk-edit');
     });
 });
 

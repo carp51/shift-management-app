@@ -146,4 +146,70 @@ class ShiftPlanningController extends Controller
 
         return $task;
     }
+
+    public function shiftPlanningBulkEdit(Request $request)
+    {
+        // カレンダーに表示されている期間の開始日と終了日を取得
+        $display_start_date = date('Y-m', $request->input('display_start_date') / 1000 + 24 * 60 * 60 * 8);
+        $display_end_date = date('Y-m', $request->input('display_end_date') / 1000 + 24 * 60 * 60 * 8);
+
+        // カレンダー表示開始日時（ミリ秒単位）を秒に変換したもの
+        $now_date_timestamp = $request->input('display_start_date') / 1000;
+
+        // 選択された曜日のリストを取得
+        $day_of_week_checked_list = $request->input('day_of_week_checked_list');
+
+        $shift_dict = array(
+            'early' => 0,
+            'late' => 1,
+        );
+
+        $day_of_week_dict = array(
+            0 => 'Sun',
+            1 => 'Mon',
+            2 => 'Tue',
+            3 => 'Wed',
+            4 => 'Thu',
+            5 => 'Fri',
+            6 => 'Sat'
+        );
+
+        $shift_info_list = array();
+
+        // 50日間のシフトを登録(カレンダーの最初と最後を全探索するので)
+        for ($i=0; $i < 50; $i++) { 
+            // 表示月範囲外の日付はスキップ
+            if (date('Y-m-d', $now_date_timestamp) < $display_start_date || date('Y-m-d', $now_date_timestamp) >= $display_end_date) {
+                $now_date_timestamp = strtotime('+1 day', $now_date_timestamp);
+                continue;
+            };
+
+            // 選択された曜日以外はスキップ
+            if (!in_array($day_of_week_dict[$i % 7], $day_of_week_checked_list)) {
+                $now_date_timestamp = strtotime('+1 day', $now_date_timestamp);
+                continue;
+            };
+
+            $loggedInUser = Auth::user();
+
+            $task = Planning::where('start_date', date('Y-m-d', $now_date_timestamp))
+                            ->where('end_date', date('Y-m-d', $now_date_timestamp))
+                            ->where('shift_type', $shift_dict[$request->input('shift_checked')])
+                            ->where('store_id', $loggedInUser->store_id)
+                            ->first();
+
+            if ($task) {
+                $task -> need_number = $request->input('need_number');
+                $task->save();
+            }
+            // シフト情報を配列に追加
+            array_push($shift_info_list, [$task->need_number, $task->start_date, $task->end_date]);
+
+            // 次の日に進む処理
+            $now_date_timestamp = strtotime('+1 day', $now_date_timestamp);
+        }
+
+        // 登録したシフトの情報を返す
+        return $shift_info_list;
+    }
 }
