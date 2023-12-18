@@ -9,11 +9,23 @@ var calendarEl = document.getElementById("calendar");
 var displayStartDay;
 var displayEndDay;
 // 表示月のシフト確定状況
-var displayShiftConfirm;
+var displayShiftConfirmStatus;
+// 表示月のシフトの公開状況
+var displayShiftShowStatus;
 
 document.getElementById('bulkSelectDecision').addEventListener('click', function(){
     var day_of_week_checks = document.getElementsByClassName('day-of-week-checks');
     var day_of_week_checked_list = [];
+
+    if (displayShiftConfirmStatus === 1) {
+        alert("シフト確定済みのためシフトを追加できません")
+        return;
+    }
+
+    if (displayShiftShowStatus === 1) {
+        alert("シフト公開済みのためシフトを追加できません")
+        return;
+    }
 
     for (let i = 0; i < 7; i++) {
         if ( day_of_week_checks[i].checked === true ) {
@@ -64,6 +76,16 @@ document.getElementById('bulkSelectDecision').addEventListener('click', function
 });
 
 document.getElementById('bulkDeleteDecision').addEventListener('click', function(info, successCallback, failureCallback){
+    if (displayShiftConfirmStatus === 1) {
+        alert("シフト確定済みのためシフトを削除できません")
+        return;
+    }
+
+    if (displayShiftShowStatus === 1) {
+        alert("シフト公開済みのためシフトを削除できません")
+        return;
+    }
+
     axios
         .post("/user/home/shift-hope/shift-bulk-delete", {
             display_start_day: displayStartDay,
@@ -91,12 +113,12 @@ document.getElementById('userShiftConfirmDecision').addEventListener('click', fu
                 document.getElementById('userShiftConfirmButton').innerText = '確定取り消し';
                 document.getElementById('userShiftConfirmText').innerText = '希望シフト:  確定';
                 document.getElementById('userShiftConfirmModalMessage').innerText = '希望シフトを取り消しますか？';
-                displayShiftConfirm = 1;
+                displayShiftConfirmStatus = 1;
             } else {
                 document.getElementById('userShiftConfirmButton').innerText = 'シフト確定';
                 document.getElementById('userShiftConfirmText').innerText = '希望シフト:  未確定';
                 document.getElementById('userShiftConfirmModalMessage').innerText = '希望シフトを確定しますか？';
-                displayShiftConfirm = 0;
+                displayShiftConfirmStatus = 0;
             };
         })
         .catch(() => {
@@ -136,8 +158,13 @@ let calendar = new Calendar(calendarEl, {
             return
         }
 
-        if (displayShiftConfirm === 1) {
+        if (displayShiftConfirmStatus === 1) {
             alert("シフト確定済みのためシフトを追加できません")
+            return;
+        }
+
+        if (displayShiftShowStatus === 1) {
+            alert("シフト公開済みのためシフトを追加できません")
             return;
         }
 
@@ -228,16 +255,17 @@ let calendar = new Calendar(calendarEl, {
                 display_start_day: displayStartDay,
             })
             .then((response) => {
+                displayShiftConfirmStatus = response.data[0];
+                displayShiftShowStatus = response.data[1]
+                console.log(response.data);
                 if (response.data){
                     document.getElementById('userShiftConfirmButton').innerText = '確定取り消し';
                     document.getElementById('userShiftConfirmText').innerText = '希望シフト: 確定';
                     document.getElementById('userShiftConfirmModalMessage').innerText = '希望シフトを取り消しますか？';
-                    displayShiftConfirm = 1;
                 } else {
                     document.getElementById('userShiftConfirmButton').innerText = 'シフト確定';
                     document.getElementById('userShiftConfirmText').innerText = '希望シフト:  未確定';
                     document.getElementById('userShiftConfirmModalMessage').innerText = '希望シフトを確定しますか？';
-                    displayShiftConfirm = 0;
                 };
             })
             .catch((response) => {
@@ -256,8 +284,13 @@ let calendar = new Calendar(calendarEl, {
             });
     
             $('.early-shift-btn, .late-shift-btn, .fulltime-shift-btn').on('click', function () {
-                if (displayShiftConfirm === 1) {
+                if (displayShiftConfirmStatus === 1) {
                     alert("シフト確定済みのためシフトを追加できません")
+                    return;
+                }
+        
+                if (displayShiftShowStatus === 1) {
+                    alert("シフト公開済みのためシフトを追加できません")
                     return;
                 }
 
@@ -293,8 +326,13 @@ let calendar = new Calendar(calendarEl, {
                 $('.early-shift-btn, .late-shift-btn, .fulltime-shift-btn').off('click');
             });
         } else {
-            if (displayShiftConfirm === 1) {
+            if (displayShiftConfirmStatus === 1) {
                 alert("シフト確定済みのためシフトを削除できません")
+                return;
+            }
+    
+            if (displayShiftShowStatus === 1) {
+                alert("シフト公開済みのためシフトを削除できません")
                 return;
             }
             

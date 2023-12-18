@@ -6,11 +6,11 @@ use Illuminate\Http\Request;
 use App\Models\Shift;
 use App\Models\Planning;
 use App\Models\UserShiftConfirm;
+use App\Models\WorkConfirm;
 use Illuminate\Support\Facades\Auth;
 
 class ShiftController extends Controller
 {
-
     public function index()
     {
         return view('common.shift_hope');
@@ -380,16 +380,33 @@ class ShiftController extends Controller
         ->where('month', $display_start_month)
         ->first();
 
-        $confirm_status = 0;
+        // 同じ月の公開情報がすでに存在するか確認
+        $existingShowRecord = WorkConfirm::where('store_id', $loggedInUser->store_id)
+        ->where('month', $display_start_month)
+        ->first();
+
+        $confirm_status = [0, 0];
 
         if ($existingRecord) {
             switch ($existingRecord->confirm_status) {
                 case 1:
-                    $confirm_status = 1;
+                    $confirm_status[0] = 1;
                     break;
                 
                 case 0:
-                    $confirm_status = 0;
+                    $confirm_status[0] = 0;
+                    break;
+            }
+        }
+
+        if ($existingShowRecord) {
+            switch ($existingShowRecord->confirm_status) {
+                case 1:
+                    $confirm_status[1] = 1;
+                    break;
+                
+                case 0:
+                    $confirm_status[1] = 0;
                     break;
             }
         }
