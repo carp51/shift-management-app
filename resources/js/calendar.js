@@ -258,7 +258,7 @@ let calendar = new Calendar(calendarEl, {
                 displayShiftConfirmStatus = response.data[0];
                 displayShiftShowStatus = response.data[1]
                 console.log(response.data);
-                if (response.data){
+                if (displayShiftConfirmStatus){
                     document.getElementById('userShiftConfirmButton').innerText = '確定取り消し';
                     document.getElementById('userShiftConfirmText').innerText = '希望シフト: 確定';
                     document.getElementById('userShiftConfirmModalMessage').innerText = '希望シフトを取り消しますか？';

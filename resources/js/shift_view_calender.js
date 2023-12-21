@@ -23,7 +23,15 @@ let calendar = new Calendar(calendarEl, {
             })
             .then((response) => {
                 console.log(response);
-                successCallback(response.data);
+                if (response.data.length > 0) {
+                    successCallback(response.data[0]);
+                
+                    var user_salary_sum = String(response.data[1]);
+                    document.getElementById("accordion-salary-text").innerText = `あなたの表示月の月収は${user_salary_sum}円です`;
+                } else {
+                    document.getElementById("accordion-salary-text").innerText = `あなたの表示月の月収は0円です`;
+                }
+                
             })
             .catch(() => {
                 //バリデーションエラーなど

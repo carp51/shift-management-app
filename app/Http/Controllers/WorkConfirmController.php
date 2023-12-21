@@ -170,7 +170,7 @@ class WorkConfirmController extends Controller
             return;
         }
 
-        return Work::query()
+        $task = Work::query()
             ->select(
                 // FullCalendarの形式に合わせる
                 'start_date as start',
@@ -182,5 +182,19 @@ class WorkConfirmController extends Controller
             ->where('end_date', '<=', $end_date)
             ->where('user_id', '=', $loggedInUser -> id)
             ->get();
+
+        $user_salary_sum = 0;
+        $minimum_hourly_wage = 960;
+
+        for ($i=0; $i < $task->count(); $i++) { 
+            $shift_type = $task[$i]['title'];
+            if ($shift_type == '早番' || $shift_type == '遅番') {
+                $user_salary_sum += $minimum_hourly_wage * 5;
+            } else {
+                $user_salary_sum += $minimum_hourly_wage * 9;
+            }
+        }
+
+        return [$task, $user_salary_sum];
     }
 }
