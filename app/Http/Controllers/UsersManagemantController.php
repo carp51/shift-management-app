@@ -29,15 +29,12 @@ class UsersManagemantController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255'],
-            'password' => ['required', 'string', 'min:8'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
             'username' => ['required', 'string', 'max:32', 'unique:users,username', 'regex:/^[a-zA-Z0-9-_]+$/'],
         ]);
 
         //バリデーションエラー時のリダイレクト先（登録画面）
         if ($validator->fails()) {
-            // return redirect('/')
-            // ->withErrors($validator)  // エラーメッセージをセッションに保存
-            // ->withInput();  // 入力データをセッションに保存
             return response()->json($validator->messages());
         }
 
@@ -59,8 +56,20 @@ class UsersManagemantController extends Controller
 
     public function update(Request $request, User $user)
     {
+        $validator = Validator::make($request->all(), [
+            'name' => ['required', 'string', 'max:255'],
+            'password' => ['confirmed'],
+            'username' => ['required', 'string', 'max:32', 'unique:users,username', 'regex:/^[a-zA-Z0-9-_]+$/'],
+        ]);
+
+        //バリデーションエラー時のリダイレクト先（登録画面）
+        if ($validator->fails()) {
+            return response()->json($validator->messages());
+        }
+        
         $user->name = $request->name;
         $user->email = $request->email;
+        $user->username = $request->username;
         if($request->filled('password')) { // パスワード入力があるときだけ変更
             $user->password = Hash::make($request->password);
         }

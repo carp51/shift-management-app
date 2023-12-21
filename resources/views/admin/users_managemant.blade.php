@@ -21,14 +21,14 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>名前</th>
+                        <th>ユーザー名</th>
                         <th>名前</th>
                         <th>役割</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="user in users">
-                        <td v-text="user.name"></td>
+                        <td v-text="user.username"></td>
                         <td v-text="user.name"></td>
                         <td v-text="user.role"></td>
                         <td class="text-right">
@@ -58,12 +58,14 @@
             <div class="form-group">
                 <label>パスワード</label>
                 <input type="password" id="password" class="form-control" name="password" v-model="params.password">
-                <span class="valid-feedback" v-if="errors" v-if="errors.password">OK</span>
+                <span class="valid-feedback" v-if="errors && errors.password">OK</span>
                 <span class="invalid-feedback" v-if="errors && errors.password" v-text="errors.password[0]"></span>
             </div>
             <div class="form-group">
                 <label>パスワード（確認）</label>
-                <input type="password" class="form-control" v-model="params.passwordConfirmation">
+                <input type="password" id="password_confirmation" class="form-control" name="password_confirmation" v-model="params.password_confirmation">
+                <span class="valid-feedback" v-if="errors && errors.password">OK</span>
+                <span class="invalid-feedback" v-if="errors && errors.password" v-text="errors.password[0]"></span>
             </div>
             <button type="button" class="btn btn-link" @click="changeState('index')">戻る</button>
             <button type="button" class="btn btn-primary" @click="onSave">保存する</button>
@@ -102,7 +104,7 @@
                         name: '',
                         email: '',
                         password: '',
-                        passwordConfirmation: '',
+                        password_confirmation: '',
                         username: ''
                     };
 
@@ -121,6 +123,8 @@
                 let url = '/admin/users';
                 let method = 'POST';
 
+                console.log('Password Confirmation:', this.params);
+
                 if (this.state === 'edit') { // 変更の場合
 
                     url += '/' + this.params.id;
@@ -130,7 +134,7 @@
 
                 axios({ url, method, params })
                     .then(response => {
-                        if (response.data.length == 0) {
+                        if (response.data.result === true) {
 
                             location.reload(); // 再読み込み
                         } else {
@@ -142,9 +146,13 @@
                                 // alert(this.errors.username[0]);
                                 const elm_username = $('#username');
                                 const elm_pass = $('#password');
+                                const elm_pass_confirm = $('#password_confirmation');
+
 
                                 console.log('username' in this.errors);
                                 console.log('password' in this.errors);
+
+                                console.log('Password Confirmation:', this.params);
 
 
                                 if ('username' in this.errors) {
@@ -158,9 +166,13 @@
                                 if ('password' in this.errors) {
                                     elm_pass.removeClass("is-valid");
                                     elm_pass.addClass("is-invalid");
-                                } else {
+                                    elm_pass_confirm.removeClass("is-valid");
+                                    elm_pass_confirm.addClass("is-invalid");
+                                } else if (method == 'POST') {
                                     elm_pass.removeClass("is-invalid");
                                     elm_pass.addClass("is-valid");
+                                    elm_pass_confirm.removeClass("is-invalid");
+                                    elm_pass_confirm.addClass("is-valid");
                                 }
                             }
                         }
@@ -172,7 +184,10 @@
                 if (confirm('削除します。よろしいですか？')) {
 
                     const url = '/admin/users/' + user.id;
-                    axios.delete(url)
+                    if (user.role == 'admin') {
+                        alert("役割がadminの方は削除できません")
+                    } else {
+                        axios.delete(url)
                         .then(response => {
 
                             if (response.data.result === true) {
@@ -183,6 +198,8 @@
 
                         });
 
+                    }
+                    
                 }
 
             }
