@@ -38,7 +38,16 @@
                             </div>
                             <div class="form-group">
                                 <label for="password">パスワード</label>
-                                <input type="password" class="form-control @error('password') is-invalid @enderror" name="password" id="password" required>
+                                <input type="password" class="form-control @error('password') is-invalid @enderror" name="password" id="password" required value="{{ old('password') }}">
+                                @error('password')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                            <div class="form-group">
+                                <label for="password">パスワード</label>
+                                <input type="password" class="form-control @error('password') is-invalid @enderror" name="password_confirmation" id="password_confirmation" required value="{{ old('password_confirmation') }}">
                                 @error('password')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>

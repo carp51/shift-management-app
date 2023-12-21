@@ -37,7 +37,7 @@ class AdminController extends Controller
    {
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255'],
-            'password' => ['required', 'string', 'min:8'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
             'username' => ['required', 'string', 'max:32', 'unique:users,username', 'regex:/^[a-zA-Z0-9-_]+$/'],
         ]);
 
