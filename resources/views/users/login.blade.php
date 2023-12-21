@@ -23,12 +23,21 @@
                         <form action="" method="post">
                             @csrf
                             <div class="form-group">
-                                <label for="name">ユーザーネーム</label>
-                                <input type="text" class="form-control" name="name" id="name" required>
+                                <label for="username">ユーザー名</label>
+                                <input type="text" class="form-control @error('username') is-invalid @enderror" name="username" id="username" value="{{ old('username') }}" required>
+                                @error('username')
+                                    <span class="invalid-feedback" role="alert">
+                                    </span>
+                                @enderror
                             </div>
                             <div class="form-group">
                                 <label for="password">パスワード</label>
-                                <input type="password" class="form-control" name="password" id="password" required>
+                                <input type="password" class="form-control @error('password') is-invalid @enderror" name="password" id="password" required>
+                                @error('password')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>ログインできませんでした</strong>
+                                    </span>
+                                @enderror
                             </div>
                             <button type="submit" class="btn btn-primary btn-block">送信</button>
                         </form>
