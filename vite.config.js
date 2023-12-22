@@ -14,6 +14,7 @@ export default defineConfig({
             'resources/js/shift_planning_calendar.js',
             'resources/js/work_confirm_calender.js',
             'resources/js/work_hope_calender.js',
+            'resources/js/calendar.js',
         ],
             refresh: true,
         }),
