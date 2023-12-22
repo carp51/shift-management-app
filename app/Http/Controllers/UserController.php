@@ -18,7 +18,7 @@ class UserController extends Controller
    public function login(Request $request)
     {
         $credentials = $request->validate([
-            'name' => ['required'],
+            'username' => ['required'],
             'password' => ['required'],
         ]);
 
@@ -28,6 +28,8 @@ class UserController extends Controller
             return redirect()->intended('user/home');
         }
 
-        return back();
+        return back()
+        ->withErrors($credentials)  // エラーメッセージをセッションに保存
+        ->withInput(); ;
     }
 }

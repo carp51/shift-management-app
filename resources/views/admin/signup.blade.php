@@ -17,19 +17,42 @@
                         <h1 class="text-center">登録画面</h1>
                     </div>
                     <div class="card-body">
-                        <form action="" method="post">
+                        <form action="{{ route('admin.signup') }}" method="post">
                             @csrf
                             <div class="form-group">
-                                <label for="store">店舗名</label>
-                                <input type="text" class="form-control" name="store" id="store" required>
+                                <label for="name">氏名</label>
+                                <input type="text" class="form-control" name="name" id="name" required value="{{ old('name') }}">
                             </div>
                             <div class="form-group">
-                                <label for="name">ユーザー名</label>
-                                <input type="text" class="form-control" name="name" id="name" required>
+                                <label for="username">ユーザー名</label>
+                                <input id="username" type="text" class="form-control @error('username') is-invalid @enderror" name="username" value="{{ old('username') }}" required autocomplete="username">
+                                @error('username')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                            <div class="form-group">
+                                <label for="store">店舗名</label>
+                                <input type="text" class="form-control" name="store" id="store" required value="{{ old('store') }}">
                             </div>
                             <div class="form-group">
                                 <label for="password">パスワード</label>
-                                <input type="password" class="form-control" name="password" id="password" required>
+                                <input type="password" class="form-control @error('password') is-invalid @enderror" name="password" id="password" required value="{{ old('password') }}">
+                                @error('password')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                            <div class="form-group">
+                                <label for="password">パスワード</label>
+                                <input type="password" class="form-control @error('password') is-invalid @enderror" name="password_confirmation" id="password_confirmation" required value="{{ old('password_confirmation') }}">
+                                @error('password')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
                             </div>
                             <button type="submit" class="btn btn-primary btn-block">送信</button>
                         </form>

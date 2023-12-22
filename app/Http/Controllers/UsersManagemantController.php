@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
 
 class UsersManagemantController extends Controller
 {
@@ -26,11 +27,23 @@ class UsersManagemantController extends Controller
 
     public function store(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'name' => ['required', 'string', 'max:255'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'username' => ['required', 'string', 'max:32', 'unique:users,username', 'regex:/^[a-zA-Z0-9-_]+$/'],
+        ]);
+
+        //バリデーションエラー時のリダイレクト先（登録画面）
+        if ($validator->fails()) {
+            return response()->json($validator->messages());
+        }
+
+
         $user = new User();
         $user->name = $request->name;
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
-        // $user->password = bcrypt($request->password);
+        $user->username = $request->username;
         $user->role = 'user';
 
         $loggedInUser = Auth::user(); // ログインしているユーザーを取得
@@ -43,8 +56,20 @@ class UsersManagemantController extends Controller
 
     public function update(Request $request, User $user)
     {
+        $validator = Validator::make($request->all(), [
+            'name' => ['required', 'string', 'max:255'],
+            'password' => ['confirmed'],
+            'username' => ['required', 'string', 'max:32', 'unique:users,username', 'regex:/^[a-zA-Z0-9-_]+$/'],
+        ]);
+
+        //バリデーションエラー時のリダイレクト先（登録画面）
+        if ($validator->fails()) {
+            return response()->json($validator->messages());
+        }
+        
         $user->name = $request->name;
         $user->email = $request->email;
+        $user->username = $request->username;
         if($request->filled('password')) { // パスワード入力があるときだけ変更
             $user->password = Hash::make($request->password);
         }
