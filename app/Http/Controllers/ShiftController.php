@@ -36,6 +36,16 @@ class ShiftController extends Controller
         $shift->user_id = $loggedInUser->id;
         $shift->store_id = $loggedInUser->store_id;
 
+        // 同じ日にシフトがすでに存在するか確認
+        $existingRecord = Shift::where('start_date', $shift->start_date)
+        ->where('end_date', $shift->end_date)
+        ->where('user_id', $shift->user_id)
+        ->first();
+
+        if ($existingRecord) {
+            $existingRecord -> delete();
+        }
+
         $shift->save();
 
         return;
@@ -95,6 +105,16 @@ class ShiftController extends Controller
             $loggedInUser = Auth::user(); // ログインしているユーザーを取得
             $shift->user_id = $loggedInUser->id;
             $shift->store_id = $loggedInUser->store_id;
+
+            // 同じ日にシフトがすでに存在するか確認
+            $existingRecord = Shift::where('start_date', date('Y-m-d', $now_day_timestamp))
+            ->where('end_date', date('Y-m-d', $now_day_timestamp))
+            ->where('user_id', $loggedInUser->id)
+            ->first();
+
+            if ($existingRecord) {
+                $existingRecord -> delete();
+            }
 
             // シフト情報を配列に追加
             array_push($shift_info_list, [$shift->shift_type, $shift->start_date, $shift->end_date]);
