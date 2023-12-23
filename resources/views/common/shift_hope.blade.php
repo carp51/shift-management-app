@@ -46,8 +46,8 @@
                     data-target="#bulkSelectModal">日付で選択</button>
             </div>
             <div class="p-0 ml-5">
-                <button type="button" class="btn btn-danger mt-1 ml-4" data-toggle="modal"
-                    data-target="#bulkSelectModal">日付で削除</button>
+                <!-- <button type="button" class="btn btn-danger mt-1 ml-4" data-toggle="modal"
+                    data-target="#bulkSelectModal">日付で削除</button> -->
                 <button type="button" class="btn btn-danger mt-1 ml-4" data-toggle="modal"
                     data-target="#bulkDeleteModal">一括削除</button>
             </div>
