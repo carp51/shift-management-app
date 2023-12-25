@@ -62,9 +62,13 @@ class UsersManagemantController extends Controller
             'username' => ['required', 'string', 'max:32', 'unique:users,username', 'regex:/^[a-zA-Z0-9-_]+$/'],
         ]);
 
+        $loggedInUser = Auth::user(); // ログインしているユーザーを取得
+
         //バリデーションエラー時のリダイレクト先（登録画面）
         if ($validator->fails()) {
-            return response()->json($validator->messages());
+            if (!$loggedInUser->username == $request->username) {
+                return response()->json($validator->messages());
+            }
         }
         
         $user->name = $request->name;
