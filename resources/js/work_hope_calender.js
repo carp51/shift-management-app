@@ -36,9 +36,7 @@ let calendar = new Calendar(calendarEl, {
     resources: [
     ],
 
-    events: function (info, successCallback, failureCallback) {
-        // Laravelのイベント取得処理の呼び出し
-        console.log(info);
+    events: function (info, successCallback) {
         axios
             .post("work/all-member-get", {
                 display_start_day: info.start.valueOf(),
@@ -50,13 +48,11 @@ let calendar = new Calendar(calendarEl, {
 
                 var resource_data = event_data;
 
-                console.log(response);
-
                 // リソースをセット
                 calendar.setOption('resources', resource_data);
             })
-            .catch((response) => {
-                //バリデーションエラーなど
+            .catch(() => {
+                // エラー時の処理
                 alert("登録に失敗しました");
             });
         axios
@@ -65,13 +61,13 @@ let calendar = new Calendar(calendarEl, {
                 end_date: info.end.valueOf(),
             })
             .then((response) => {
-                // // カレンダーに読み込み
+                // カレンダーに読み込み
                 var event_data = response.data;
                 successCallback(event_data);
             })
-            .catch((response) => {
-                //バリデーションエラーなど
-                alert("登録に失敗しました");
+            .catch(() => {
+                // エラー時の処理
+                alert("シフト取得に失敗しました");
             });
     },
 });

@@ -23,7 +23,7 @@
             </h2>
             <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                 <div class="accordion-body">
-                    <p id="accordion-salary-text">あなたの表示月の月収は0円です</p>
+                    <p id="user-salary-text">あなたの表示月の月収は0円です</p>
                 </div>
             </div>
         </div>

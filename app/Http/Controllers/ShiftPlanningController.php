@@ -67,7 +67,6 @@ class ShiftPlanningController extends Controller
                 // シフト情報を配列に追加
                 array_push($shift_planning_list, [$planning->shift_type, $planning->need_number, $planning->start_date, $planning->end_date]);
             }
-            // $shift_status_list[] = $this->generateShiftStatus($task, $now_day_timestamp);
 
             // 次の日に進む処理
             $now_day_timestamp = strtotime('+1 day', $now_day_timestamp);

@@ -86,12 +86,6 @@ class WorkConfirmController extends Controller
         $display_start_month = date('Y-m-d', $request->input('display_start_date') / 1000);
         $loggedInUser = Auth::user();
 
-        // // JavaScriptから送信された日付（1月1日）
-        // $jsStartDate = $request->input('display_start_day');
-
-        // // JavaScriptの月のインデックスは0から始まるため、1を加える
-        // $phpStartDate = date('Y-m-d', strtotime($jsStartDate . '+1 month'));
-
         // 同じ月の確定情報がすでに存在するか確認
         $existingRecord = WorkConfirm::where('store_id', $loggedInUser->store_id)
         ->where('month', $display_start_month)
