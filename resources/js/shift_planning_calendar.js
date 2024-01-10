@@ -19,18 +19,14 @@ const modalPlusButton = document.getElementById('bulk-modal-plus-btn');
 
 // JavaScriptでプラスボタンのクリックイベントを設定
 plusButton.addEventListener('click', function () {
-    // 現在の値を取得し、1を加えて再設定
     currentVal = parseInt(document.getElementById('counter-input').value, 10) + 1;
     document.getElementById('counter-input').value = currentVal;
-    console.log(currentVal, "p");
 });
 
 // JavaScriptでプラスボタンのクリックイベントを設定
 modalPlusButton.addEventListener('click', function () {
-    // 現在の値を取得し、1を加えて再設定
     currentVal = parseInt(document.getElementById('bulk-modal-counter-input').value, 10) + 1;
     document.getElementById('bulk-modal-counter-input').value = currentVal;
-    console.log(currentVal, "p");
 });
 
 const minusButton = document.getElementById('minus-btn');
@@ -38,22 +34,18 @@ const modalMinusButton = document.getElementById('bulk-modal-minus-btn');
 
 // JavaScriptでマイナスボタンのクリックイベントを設定
 minusButton.addEventListener('click', function () {
-    // 現在の値を取得し、1を減らして再設定
     if (currentVal - 1 >= 0) {
         currentVal = parseInt(document.getElementById('counter-input').value, 10) - 1;
         document.getElementById('counter-input').value = currentVal;
     }
-    console.log(currentVal, "m");
 });
 
 // JavaScriptでマイナスボタンのクリックイベントを設定
 modalMinusButton.addEventListener('click', function () {
-    // 現在の値を取得し、1を減らして再設定
     if (currentVal - 1 >= 0) {
         currentVal = parseInt(document.getElementById('bulk-modal-counter-input').value, 10) - 1;
         document.getElementById('bulk-modal-counter-input').value = currentVal;
     }
-    console.log(currentVal, "m");
 });
 
 var title;
@@ -64,7 +56,6 @@ var display_end_date;
 
 // JavaScriptで決定ボタンのクリックイベントを設定
 document.getElementById('counter-confirm').addEventListener('click', function (info) {
-    console.log(info);
     axios
         .post("shift-planning/shift-planning-edit", {
             start_date: start_date,
@@ -72,40 +63,40 @@ document.getElementById('counter-confirm').addEventListener('click', function (i
             title: title,
             need_number: currentVal
         })
-        .then((response) => {
-            console.log(response);
+        .then(() => {
             document.location.reload();
         })
         .catch(() => {
-            // バリデーションエラーなど
+            //  エラー時の処理
             alert("変更に失敗しました");
         });
 });
 
 // JavaScriptで一括選択モーダルでの決定ボタンのクリックイベントを設定
 document.getElementById('bulkSelectDecision').addEventListener('click', function () {
+    // 曜日選択チェックボックスの要素を取得
     var day_of_week_checks = document.getElementsByClassName('day-of-week-checks');
     var day_of_week_checked_list = [];
 
+    // 選択された曜日をリストに追加
     for (let i = 0; i < 7; i++) {
         if ( day_of_week_checks[i].checked === true ) {
             day_of_week_checked_list.push(day_of_week_checks[i].value);
         }
     }
 
+    // シフト選択チェックボックスの要素を取得
     var shift_checks = document.getElementsByName('shift-checks');
     var shift_checked = '';
 
+    // 選択されたシフトを取得
     for (let i = 0; i < 2; i++) {
         if ( shift_checks[i].checked === true ) {
             shift_checked = shift_checks[i].value;
         }
     }
 
-    console.log(day_of_week_checked_list);
-    console.log(shift_checked);
-
-    // 選択された曜日とシフトがある場合
+    // 曜日とシフトが選択されていなければアラートを表示して処理を終了
     if (!(day_of_week_checked_list.length != 0 && shift_checked != '')) {
         alert("曜日とシフトを選択してください")
         return;
@@ -119,12 +110,10 @@ document.getElementById('bulkSelectDecision').addEventListener('click', function
             day_of_week_checked_list: day_of_week_checked_list,
             need_number: currentVal
         })
-        .then((response) => {
-            console.log(response);
+        .then(() => {
             document.location.reload();
         })
         .catch(() => {
-            // バリデーションエラーなど
             alert("変更に失敗しました");
         });
 });
@@ -140,8 +129,8 @@ let calendar = new Calendar(calendarEl, {
     },
     locale: "ja",
 
-    events: function (info, successCallback, failureCallback) {
-        // Laravelのイベント取得処理の呼び出し
+    events: function (info, successCallback) {
+        // Laravelのイベント取得処理を呼び出すための日付範囲を設定
         display_start_date = info.start.valueOf();
         display_end_date = info.end.valueOf();
 
@@ -150,12 +139,13 @@ let calendar = new Calendar(calendarEl, {
                 start_date: info.start.valueOf(),
                 end_date: info.end.valueOf(),
             })
-            .then((response) => {
+            .then(() => {
             })
-            .catch((response) => {
-                //バリデーションエラーなど
+            .catch(() => {
+                // エラー時の処理
                 alert("登録に失敗しました");
             });
+
         axios
             .post("shift-planning/shift-planning-get", {
                 start_date: info.start.valueOf(),
@@ -164,17 +154,19 @@ let calendar = new Calendar(calendarEl, {
             .then((response) => {
                 successCallback(response.data);
             })
-            .catch((response) => {
-                //バリデーションエラーなど
+            .catch(() => {
+                // エラー時の処理
                 alert("取得に失敗しました");
             });
         },
     
     eventClick: function (info) {
+        // クリックされたイベントの開始日時と終了日時、タイトルを取得
         start_date = info.event._instance.range.start.valueOf();
         end_date = info.event._instance.range.end.valueOf();
         title = info.event._def.title;
 
+        // _より左はシフト、右は人数であるので人数だけ抜き出してcurrentValに入れる
         var str = info.event._def.title;
         currentVal = parseInt(str.substr(str.indexOf('_') + 1), 10);
         document.getElementById('counter-input').value = currentVal;

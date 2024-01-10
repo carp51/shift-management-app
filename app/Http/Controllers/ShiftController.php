@@ -276,22 +276,6 @@ class ShiftController extends Controller
             $shift_check_color[1] = "black";
         }
         return [$status, $early_shift_need_number - $shift_check[0], $late_shift_need_number - $shift_check[1], $shift_check_color[0], $shift_check_color[1]];
-
-        // if ($task->count() === 0) {
-        //     $status['color'] = "#FF0000";
-        // } elseif ($task->count() === 1) {
-        //     if ($task->first()->shift_type === "通し") {
-        //         $status['color'] = "#00FF00";
-        //     } elseif ($task->first()->shift_type === "早番") {
-        //         $status['color'] = "#00FFFF";
-        //         $status['title'] = "早番";
-        //     } elseif ($task->first()->shift_type === "遅番") {
-        //         $status['color'] = "#00FFFF";
-        //         $status['title'] = "遅番";
-        //     }
-        // }
-
-        // return $status;
     }
 
     public function shiftDelete(Request $request)

@@ -20,19 +20,15 @@ var displayEndDay;
 
 var shiftShowButtonStatus = 0;
 
+// 従業員の希望シフトをコピーするのボタンを押したら
 document.getElementById('shiftTempCreate').addEventListener('click', function(info){
-    console.log(info);
     if (confirm('従業員の希望シフトを従業員に公開するシフトに上書きしますか？')) {
     axios
         .post("/user/work/shift-temp-create", {
             start_date: displayStartDay,
             end_date: displayEndDay,
         })
-        .then((response) => {
-            // 追加したイベントを削除
-            // calendar.removeAllEvents();
-
-            console.log(response.data);
+        .then(() => {
             document.location.reload();
         })
         .catch(() => {
@@ -42,9 +38,8 @@ document.getElementById('shiftTempCreate').addEventListener('click', function(in
     }
 });
 
+// シフトを公開するのボタンを押したら
 document.getElementById('shiftShow').addEventListener('click', function(info){
-    console.log(info);
-    console.log(displayStartDay);
     if (shiftShowButtonStatus) {
         var $massage = "シフトの公開を取り消しますか？";
     } else {
@@ -57,11 +52,12 @@ document.getElementById('shiftShow').addEventListener('click', function(info){
                 display_start_date: displayStartDay,
             })
             .then((response) => {
-                // 追加したイベントを削除
-                // calendar.removeAllEvents();
-
-                console.log(response.data);
-                document.location.reload();
+                var showStatus = response.data;
+                if (showStatus == 1) {
+                    document.getElementById('shiftShow').innerText = 'シフトの公開を取り消す';
+                } else {
+                    document.getElementById('shiftShow').innerText = 'シフトを公開する';
+                }
             })
             .catch(() => {
                 // エラー時の処理
@@ -76,9 +72,9 @@ let calendar = new Calendar(calendarEl, {
     initialView: "resourceTimelineMonth",
     initialDate: nextMonthDate,
     headerToolbar: {
-        left: "",
+        left: "prev",
         center: "title",
-        right: "",
+        right: "next",
     },
     locale: "ja",
     contentHeight: 'auto',
@@ -112,9 +108,7 @@ let calendar = new Calendar(calendarEl, {
         $('.early-shift-btn, .late-shift-btn, .fulltime-shift-btn').on('click', function () {
             shiftType = $(this).text(); // クリックされたボタンのテキストを取得
             // ここで取得した shiftType を使って必要な処理を行う
-            console.log(info);
             if (shiftType) {
-                // Laravelの登録処理の呼び出し
                 axios
                     .post("/user/work/confirm/shift-add", {
                         start_date: info.start.valueOf(),
@@ -123,18 +117,19 @@ let calendar = new Calendar(calendarEl, {
                         user_id: info.resource._resource.id
                     })
                     .then(() => {
-                        // イベントの追加
-                        // calendar.addEvent({
-                        //     title: shiftType,
-                        //     start: info.start,
-                        //     end: info.end,
-                        //     allDay: true,
-                        // }, true
-                        // );
-                        document.location.reload();
+                        //イベントの追加
+                        console.log(info.start);
+                        calendar.addEvent({
+                            title: shiftType,
+                            start: info.start,
+                            end: info.end,
+                            resourceId: info.resource._resource.id,
+                            allDay: true,
+                        }, 
+                        );
                     })
                     .catch(() => {
-                        // バリデーションエラーなど
+                        // エラー時の処理
                         alert("登録に失敗しました");
                     });
             }
@@ -143,11 +138,10 @@ let calendar = new Calendar(calendarEl, {
         });
     },
 
-    events: function (info, successCallback, failureCallback) {
+    events: function (info, successCallback) {
         // 現在、表示されているカレンダーの最初と終わりの日付を取得する
         displayStartDay = info.start.valueOf();
         displayEndDay = info.end.valueOf();
-        console.log(info);
         // Laravelのイベント取得処理の呼び出し
         axios
             .post("work/all-member-get", {
@@ -164,7 +158,7 @@ let calendar = new Calendar(calendarEl, {
                 calendar.setOption('resources', resource_data);
             })
             .catch(() => {
-                //バリデーションエラーなど
+                //エラー時の処理
                 alert("登録に失敗しました");
             });
         axios
@@ -177,7 +171,7 @@ let calendar = new Calendar(calendarEl, {
                 successCallback(response.data);
             })
             .catch(() => {
-                //バリデーションエラーなど
+                //エラー時の処理
                 alert("登録に失敗しました");
             });
         axios
@@ -194,13 +188,12 @@ let calendar = new Calendar(calendarEl, {
                 };
             })
             .catch(() => {
-                //バリデーションエラーなど
+                //エラー時の処理
                 alert("登録に失敗しました");
             });
     },
 
     eventClick: function (info) {
-        console.log(info.event._instance.range.start.valueOf());
         if (confirm('削除しますか？')) {
             axios
                 .post("work/confirm/shift-delete", {
@@ -211,7 +204,7 @@ let calendar = new Calendar(calendarEl, {
                 .then(() => {
                 })
                 .catch(() => {
-                    // バリデーションエラーなど
+                    // エラー時の処理
                     alert("削除に失敗しました");
                 });
             info.event.remove()

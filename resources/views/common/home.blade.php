@@ -23,14 +23,13 @@
             </h2>
             <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                 <div class="accordion-body">
-                    <p id="accordion-salary-text">あなたの表示月の月収は0円です</p>
+                    <p id="user-salary-text">あなたの表示月の月収は0円です</p>
                 </div>
             </div>
         </div>
     </div>
 
-
-    <h3 style="text-align: center; margin-top: 30px;">今月のシフト</h3>
+    <h3 style="text-align: center; margin-top: 30px;"></h3>
     <div id='shift_view_calendar'></div>
 </body>
 

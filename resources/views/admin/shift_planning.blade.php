@@ -16,7 +16,7 @@
     <div class="row">
             <div class="p-0 ml-5">
                 <button type="button" class="btn btn-primary ml-4" data-toggle="modal"
-                    data-target="#bulkSelectModal">日付で選択</button>
+                    data-target="#bulkSelectModal">曜日で選択</button>
             </div>
     </div>
 
