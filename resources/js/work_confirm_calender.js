@@ -51,8 +51,13 @@ document.getElementById('shiftShow').addEventListener('click', function(info){
             .post("/user/work/confirm/shift-show", {
                 display_start_date: displayStartDay,
             })
-            .then(() => {
-                document.location.reload();
+            .then((response) => {
+                var showStatus = response.data;
+                if (showStatus == 1) {
+                    document.getElementById('shiftShow').innerText = 'シフトの公開を取り消す';
+                } else {
+                    document.getElementById('shiftShow').innerText = 'シフトを公開する';
+                }
             })
             .catch(() => {
                 // エラー時の処理
@@ -67,9 +72,9 @@ let calendar = new Calendar(calendarEl, {
     initialView: "resourceTimelineMonth",
     initialDate: nextMonthDate,
     headerToolbar: {
-        left: "",
+        left: "prev",
         center: "title",
-        right: "",
+        right: "next",
     },
     locale: "ja",
     contentHeight: 'auto',
@@ -112,15 +117,16 @@ let calendar = new Calendar(calendarEl, {
                         user_id: info.resource._resource.id
                     })
                     .then(() => {
-                        // イベントの追加
-                        // calendar.addEvent({
-                        //     title: shiftType,
-                        //     start: info.start,
-                        //     end: info.end,
-                        //     allDay: true,
-                        // }, true
-                        // );
-                        document.location.reload();
+                        //イベントの追加
+                        console.log(info.start);
+                        calendar.addEvent({
+                            title: shiftType,
+                            start: info.start,
+                            end: info.end,
+                            resourceId: info.resource._resource.id,
+                            allDay: true,
+                        }, 
+                        );
                     })
                     .catch(() => {
                         // エラー時の処理

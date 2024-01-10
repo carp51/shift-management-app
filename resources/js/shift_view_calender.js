@@ -5,6 +5,8 @@ import axios from 'axios';
 
 var calendarEl = document.getElementById("shift_view_calendar");
 
+var display_month = -1;
+
 let calendar = new Calendar(calendarEl, {
     plugins: [dayGridPlugin, interactionPlugin],
     initialView: "dayGridMonth",
@@ -16,7 +18,6 @@ let calendar = new Calendar(calendarEl, {
     locale: "ja",
 
     events: function (info, successCallback) {
-        console.log(info);
         axios
             .post("home/user-shift-show", {
                 start_day: info.start.valueOf(),
