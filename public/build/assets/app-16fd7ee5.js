@@ -1,1 +1,0 @@
-import{a as o}from"./index-73320e29.js";import"./calendar-e94890e6.js";import"./work_hope_calender-3c03357f.js";import"./index-7ae24b1e.js";import"./index-3666857a.js";window.axios=o;window.axios.defaults.headers.common["X-Requested-With"]="XMLHttpRequest";
