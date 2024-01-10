@@ -29,8 +29,7 @@
         </div>
     </div>
 
-
-    <h3 style="text-align: center; margin-top: 30px;">今月のシフト</h3>
+    <h3 style="text-align: center; margin-top: 30px;"></h3>
     <div id='shift_view_calendar'></div>
 </body>
 
