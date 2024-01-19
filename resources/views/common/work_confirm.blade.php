@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
     <title>シフト確定画面</title>
     @vite(['resources/css/app.css', 'resources/js/work_hope_calender.js', 'resources/js/work_confirm_calender.js'])
 </head>
@@ -17,6 +19,8 @@
     <div id='work_confirm_calendar'></div>
     <a class="btn btn-primary d-block mx-auto" id="shiftTempCreate" style="width: 200px; color:white; margin-bottom:30px; margin-top:30px;">従業員の希望シフトをコピーする</a>
     <a class="btn btn-primary d-block mx-auto" id="shiftShow" style="width: 200px; color:white; margin-bottom:30px; margin-top:30px;">シフトを公開する</a>
+
+    <a class="btn btn-primary d-block mx-auto" id="shiftToExcel" style="width: 200px; color:white; margin-bottom:30px; margin-top:30px;">シフトをEXCELで出力する</a>
 
     <div class="modal" tabindex="-1" id="exampleModal">
         <div class="modal-dialog">

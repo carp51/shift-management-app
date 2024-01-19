@@ -66,6 +66,27 @@ document.getElementById('shiftShow').addEventListener('click', function(info){
         }
 });
 
+// シフトをEXCELで出力するのボタンを押したら
+document.getElementById('shiftToExcel').addEventListener('click', function(info){
+    console.log(displayStartDay);
+    console.log(displayEndDay.valueOf());
+    axios
+        .post('/user/work/confirm/excel-file-get', {
+            display_start_date: displayStartDay,
+            display_end_date: displayEndDay,
+        }, {
+            // レスポンスタイプをBlobに設定
+            responseType: 'blob' 
+        })
+        .then((response) => {
+            console.log(response);
+            saveAs(response.data, 'myExcelFile.xlsx');
+        })
+        .catch(() => {
+            alert("エクセルを出力するのに失敗しました");
+        });
+});
+
 let calendar = new Calendar(calendarEl, {
     schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
     plugins: [interactionPlugin, resourceTimelinePlugin],

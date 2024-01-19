@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Shift;
 use App\Models\Work;
+use App\Models\User;
 use App\Models\WorkConfirm;
 use Illuminate\Support\Facades\Auth;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+
 
 class WorkConfirmController extends Controller
 {
@@ -190,5 +193,203 @@ class WorkConfirmController extends Controller
         }
 
         return [$task, $user_salary_sum];
+    }
+
+    public function excelFileGet(Request $request)
+    {
+        $display_start_date = date('Y-m-d', $request->input('display_start_date') / 1000);
+        $display_end_date = date('Y-m-d', $request->input('display_end_date') / 1000);
+        $loggedInUser = Auth::user();
+
+        $shift_template = IOFactory::load(storage_path('app/public/shift_template.xlsx'));
+        $output = $this->excelFileEdit($shift_template, $display_start_date, $display_end_date);
+        
+        $writer = IOFactory::createWriter($output, 'Xlsx');
+        $temp_file = tempnam(sys_get_temp_dir(), 'excel');
+        $writer->save($temp_file);
+
+        return response()->download($temp_file, 'shifts.xlsx')->deleteFileAfterSend(true);
+    }
+
+    private function excelFileEdit($excel_file, $display_start_date, $display_end_date)
+    {
+        $days_difference = $this->getDaysDifference($display_start_date, $display_end_date);
+
+        $week_index = date('w', strtotime($display_start_date));
+
+        $excel_file = $this->daysWrite($excel_file, "E", 3,  $days_difference, $week_index);
+        $excel_file = $this->daysWrite($excel_file, "E", 16, $days_difference, $week_index);
+        
+        $excel_file = $this->monthWrite($excel_file, strtotime($display_start_date));
+
+        $excel_file = $this->userShiftWrite($excel_file, $display_start_date, $display_end_date);
+
+        return $excel_file;
+    }
+
+    private function daysWrite($excel_file, $start_column, $start_row,$days_difference, $week_index)
+    {
+        $start_column = $start_column;
+        $start_row = $start_row;
+
+        $week = [
+            '日', //0
+            '月', //1
+            '火', //2
+            '水', //3
+            '木', //4
+            '金', //5
+            '土', //6
+          ];
+
+        $sheet = $excel_file->getActiveSheet();
+
+        for ($i=0; $i < $days_difference; $i++) { 
+            $target_day_cell =  $start_column . (string) $start_row;
+            $target_week_cell = $start_column . (string) ($start_row + 1);
+            
+            $sheet->setCellValue($target_day_cell, $i + 1);
+            $sheet->setCellValue($target_week_cell, $week[$week_index]);
+
+            if ($week_index == 6) {
+                $excel_file = $this->saturdayColorWrite($excel_file, $start_column);
+            } elseif ($week_index == 0) {
+                $excel_file = $this->sundayColorWrite($excel_file, $start_column);
+            }
+
+            $start_column = ++$start_column;
+            $week_index = ($week_index + 1) % 7;
+        }
+
+        return $excel_file;
+    }
+
+    private function monthWrite($excel_file, $display_start_date)
+    {
+        $sheet = $excel_file->getActiveSheet();
+
+        # 和暦と月を書き込む
+        $sheet->setCellValue("T2", intval(date('m', $display_start_date)));
+        $sheet->setCellValue("T15", intval(date('m', $display_start_date)));
+        $sheet->setCellValue("Q2", intval(date('Y', $display_start_date)) - 2018);
+        $sheet->setCellValue("Q15", intval(date('Y', $display_start_date)) - 2018);
+
+        return $excel_file;
+    }
+    
+    private function saturdayColorWrite($excel_file, $now_column)
+    {
+        $sheet = $excel_file->getActiveSheet();
+
+        for ($i=3; $i < 22; $i++) { 
+            if (9 < $i && $i < 16) {
+                continue;
+            }
+            $target_cell = $now_column . (string) $i;
+            $sheet->getStyle($target_cell)
+            ->getFill()
+            ->setFillType('solid')
+            ->getStartColor()
+            ->setARGB('8DB4E2');
+        }
+        return $excel_file;
+    }
+
+    private function sundayColorWrite($excel_file, $now_column)
+    {
+        $sheet = $excel_file->getActiveSheet();
+
+        for ($i=3; $i < 22; $i++) { 
+            if (8 < $i && $i < 16) {
+                continue;
+            }
+            $target_cell = $now_column . (string) $i;
+            $sheet->getStyle($target_cell)
+            ->getFill()
+            ->setFillType('solid')
+            ->getStartColor()
+            ->setARGB('FF7C80');
+        }
+        return $excel_file;
+    }
+
+    private function userShiftWrite($excel_file, $start_date, $end_date)
+    {
+        $sheet = $excel_file->getActiveSheet();
+
+        $start_column = "E";
+        $start_row = 5;
+        
+        $loggedInUser = Auth::user();
+        $all_user = User::query()
+                    ->where('store_id', '=', $loggedInUser -> store_id)
+                    ->get();
+
+        $position_mapping = array();
+        
+        for ($i=0; $i < $all_user -> count(); $i++) { 
+            if ($i < 4) {
+                $target_cell = "A" . (string) ($start_row + $i);
+                $position_mapping[$all_user[$i]['id']] = $i;
+                $sheet->setCellValue($target_cell, $all_user[$i]['name']);
+            } else {
+                $target_cell = "A" . (string) ($start_row + $i + 9);
+                $position_mapping[$all_user[$i]['id']] = $i + 9;
+                $sheet->setCellValue($target_cell, $all_user[$i]['name']);
+            }
+        }
+
+        Log::debug(print_r($position_mapping, true));
+
+        $all_shift = Work::query()
+                    ->select(
+                        'start_date',
+                        'shift_type',
+                        'user_id'
+                    )
+                    ->where('start_date', '>=', $start_date)
+                    ->where('end_date', '<', $end_date)
+                    ->where('store_id', '=', $loggedInUser -> store_id)
+                    ->get();
+        
+        $sheet->setCellValue("A50", $all_shift->count());
+
+        for ($i=0; $i < $all_shift->count(); $i++) { 
+            $start_date_day = date('d', strtotime($all_shift[$i]['start_date']));
+            $user_id = $all_shift[$i]['user_id'];
+            $shift_type = $all_shift[$i]['shift_type'];
+            
+            if ($shift_type == "早番") {
+                $shift_type = "早";
+            } elseif ($shift_type == "遅番") {
+                $shift_type = "遅";
+            } elseif ($shift_type == "通し") {
+                $shift_type = "通";
+            }
+
+            $target_cell =  $this->getAlfabet($start_column, intval($start_date_day)) . (string) ($start_row + $position_mapping[$user_id]);
+            $sheet->setCellValue($target_cell, $shift_type);
+        }
+
+        return $excel_file;
+    }
+
+    private function getAlfabet($alfabet, $plus_num)
+    {
+        for ($i=0; $i < $plus_num - 1; $i++) { 
+            $alfabet = ++$alfabet;
+        }
+        return $alfabet;
+    }
+
+    private function getDaysDifference($display_start_date, $display_end_date)
+    {
+        $start_date = new \DateTime($display_start_date);
+        $end_date = new \DateTime($display_end_date);
+
+        $days_difference = $start_date->diff($end_date);
+        $days_difference = $days_difference->days;
+
+        return $days_difference;
     }
 }

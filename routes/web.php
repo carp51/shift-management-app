@@ -56,6 +56,8 @@ Route::prefix('user')->group(function() {
         Route::post('/work/confirm/shift-delete',[WorkConfirmController::class,'shiftDelete']) -> name('shift-delete');
         Route::post('/work/confirm/shift-show',[WorkConfirmController::class,'shiftShow']) -> name('shift-show');
         Route::post('/work/confirm/shift-show-status-get',[WorkConfirmController::class,'shiftShowStatusGet']) -> name('shift-show-status-get');
+
+        Route::post('/work/confirm/excel-file-get',[WorkConfirmController::class,'excelFileGet']);
     });
 });
 
