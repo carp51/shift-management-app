@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Shift;
 use App\Models\Work;
 use App\Models\User;
+use App\Models\Store;
 use App\Models\WorkConfirm;
 use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -208,7 +209,11 @@ class WorkConfirmController extends Controller
         $temp_file = tempnam(sys_get_temp_dir(), 'excel');
         $writer->save($temp_file);
 
-        return response()->download($temp_file, 'shifts.xlsx')->deleteFileAfterSend(true);
+        $loggedInUser_store_id = $loggedInUser -> id;
+        $store_name = Store::where('store_id', '=', $loggedInUser_store_id) -> first()-> name;
+        $file_name = $store_name . "勤務表";
+
+        return response()->download($temp_file, $file_name)->deleteFileAfterSend(true);
     }
 
     private function excelFileEdit($excel_file, $display_start_date, $display_end_date)
@@ -221,8 +226,7 @@ class WorkConfirmController extends Controller
         $excel_file = $this->daysWrite($excel_file, "E", 16, $days_difference, $week_index);
         
         $excel_file = $this->monthWrite($excel_file, strtotime($display_start_date));
-
-        $excel_file = $this->userShiftWrite($excel_file, $display_start_date, $display_end_date);
+        $excel_file = $this->monthWrite($excel_file, strtotime($display_start_date));
 
         return $excel_file;
     }
@@ -273,6 +277,15 @@ class WorkConfirmController extends Controller
         $sheet->setCellValue("T15", intval(date('m', $display_start_date)));
         $sheet->setCellValue("Q2", intval(date('Y', $display_start_date)) - 2018);
         $sheet->setCellValue("Q15", intval(date('Y', $display_start_date)) - 2018);
+
+        $loggedInUser = Auth::user();
+        $loggedInUser_store_id = $loggedInUser -> id;
+        $store_name = Store::where('store_id', '=', $loggedInUser_store_id) -> first()-> name;
+        $title = $store_name . "勤務表";
+        $sheet->setCellValue("Q15", intval(date('Y', $display_start_date)) - 2018);
+
+        $sheet->setCellValue("A1", $title);
+        $sheet->setCellValue("A14", $title);
 
         return $excel_file;
     }
@@ -338,8 +351,6 @@ class WorkConfirmController extends Controller
                 $sheet->setCellValue($target_cell, $all_user[$i]['name']);
             }
         }
-
-        Log::debug(print_r($position_mapping, true));
 
         $all_shift = Work::query()
                     ->select(
