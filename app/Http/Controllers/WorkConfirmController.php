@@ -202,7 +202,7 @@ class WorkConfirmController extends Controller
         $display_end_date = date('Y-m-d', $request->input('display_end_date') / 1000);
         $loggedInUser = Auth::user();
 
-        $shift_template = IOFactory::load(storage_path('app/public/shift_template.xlsx'));
+        $shift_template = IOFactory::load(resource_path('excel/shift_template.xlsx'));
         $output = $this->excelFileEdit($shift_template, $display_start_date, $display_end_date);
         
         $writer = IOFactory::createWriter($output, 'Xlsx');
@@ -226,7 +226,7 @@ class WorkConfirmController extends Controller
         $excel_file = $this->daysWrite($excel_file, "E", 16, $days_difference, $week_index);
         
         $excel_file = $this->monthWrite($excel_file, strtotime($display_start_date));
-        $excel_file = $this->monthWrite($excel_file, strtotime($display_start_date));
+        $excel_file = $this->userShiftWrite($excel_file, $display_start_date, $display_end_date);
 
         return $excel_file;
     }

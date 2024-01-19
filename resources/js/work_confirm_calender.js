@@ -68,8 +68,6 @@ document.getElementById('shiftShow').addEventListener('click', function(info){
 
 // シフトをEXCELで出力するのボタンを押したら
 document.getElementById('shiftToExcel').addEventListener('click', function(info){
-    console.log(displayStartDay);
-    console.log(displayEndDay.valueOf());
     axios
         .post('/user/work/confirm/excel-file-get', {
             display_start_date: displayStartDay,
@@ -79,7 +77,6 @@ document.getElementById('shiftToExcel').addEventListener('click', function(info)
             responseType: 'blob' 
         })
         .then((response) => {
-            console.log(response);
             saveAs(response.data, 'myExcelFile.xlsx');
         })
         .catch(() => {
