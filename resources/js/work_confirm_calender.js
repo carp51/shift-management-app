@@ -77,12 +77,21 @@ document.getElementById('shiftToExcel').addEventListener('click', function(info)
             responseType: 'blob' 
         })
         .then((response) => {
-            saveAs(response.data, 'myExcelFile.xlsx');
+            console.log(response);
+            const file_name = getFileName(response.headers['content-disposition']);
+            saveAs(response.data, file_name);
         })
         .catch(() => {
             alert("エクセルを出力するのに失敗しました");
         });
 });
+
+const getFileName = (contentDisposition) => {
+    return decodeURI(contentDisposition).substring(
+      contentDisposition.indexOf("''") + 2,
+      contentDisposition.length,
+    )
+  }
 
 let calendar = new Calendar(calendarEl, {
     schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
