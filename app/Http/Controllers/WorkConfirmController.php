@@ -210,8 +210,10 @@ class WorkConfirmController extends Controller
         $writer->save($temp_file);
 
         $loggedInUser_store_id = $loggedInUser -> id;
+        $display_start_year = date('Y', strtotime($display_start_date));
+        $display_start_month = date('m', strtotime($display_start_date));
         $store_name = Store::where('store_id', '=', $loggedInUser_store_id) -> first()-> name;
-        $file_name = $store_name . "勤務表";
+        $file_name = $store_name . "勤務表（" . $display_start_year . "年" . $display_start_month ."月）.xlsx";
 
         return response()->download($temp_file, $file_name)->deleteFileAfterSend(true);
     }
@@ -295,7 +297,7 @@ class WorkConfirmController extends Controller
         $sheet = $excel_file->getActiveSheet();
 
         for ($i=3; $i < 22; $i++) { 
-            if (9 < $i && $i < 16) {
+            if (8 < $i && $i < 16) {
                 continue;
             }
             $target_cell = $now_column . (string) $i;
