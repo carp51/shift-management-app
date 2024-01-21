@@ -364,8 +364,6 @@ class WorkConfirmController extends Controller
                     ->where('end_date', '<', $end_date)
                     ->where('store_id', '=', $loggedInUser -> store_id)
                     ->get();
-        
-        $sheet->setCellValue("A50", $all_shift->count());
 
         for ($i=0; $i < $all_shift->count(); $i++) { 
             $start_date_day = date('d', strtotime($all_shift[$i]['start_date']));
